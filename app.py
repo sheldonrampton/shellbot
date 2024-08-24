@@ -3,8 +3,8 @@ shellbot_flask.py:
 Runs a Flask-powered chatbot that answers questions using embeddings
 extracted from Sheldon Rampton's social media and emails.
 
-To run:
-flask --app shellbot_flask run
+To run locally:
+flask --app app run
 """
 
 from flask import Flask, request, jsonify, render_template

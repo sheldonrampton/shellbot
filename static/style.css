@@ -1,6 +1,7 @@
 #chat-container {
     position: relative; /* Make sure the chat container is positioned and can use z-index */
-    width: 500px;
+    width: 90%; /* Adjust width for smaller screens */
+    max-width: 500px; /* Maintain max width for larger screens */
     margin: 0 auto;
     border: 1px solid #ccc;
     padding: 20px;
@@ -22,7 +23,7 @@
 }
 
 #user-input {
-    width: 80%;
+    width: 70%; /* Reduce width for smaller screens */
     padding: 10px;
     margin-right: 10px;
     background-color: white;
@@ -30,19 +31,23 @@
 
 button {
     padding: 10px 20px;
+    width: 20%; /* Make the button take up the remaining space */
 }
 
 body {
     position: relative; /* Ensure that the body is the containing block for absolutely positioned elements */
     background-color: #03b8fc;
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
 }
 
 .background-element {
     position: absolute;
     width: 180px;
     height: 180px;
-    top: 10px; /* 10 pixels down from the top of the page */
-    left: 10px; /* 10 pixels over from the right side of the page */
+    top: 10px;
+    left: 10px;
     background-image: url('/static/images/shellbot_logo.png'); /* Adjust the path to your image */
     background-size: cover; /* Ensures the image covers the entire div */
     background-repeat: no-repeat; /* Prevents the image from repeating */
@@ -62,3 +67,69 @@ body {
     box-sizing: border-box; /* Ensure padding is included in the width */
 }
 
+/* Responsive Styles */
+@media screen and (max-width: 768px) {
+    #background-element, #text-block {
+        width: 100%; /* Make these elements take up the full width */
+        left: 0; /* Align to the left edge */
+        position: relative; /* Make the elements flow with the page */
+        margin: 0 auto;
+        text-align: center; /* Center the text */
+    }
+
+    #background-element {
+        height: 150px; /* Adjust the height for smaller screens */
+        background-size: contain; /* Make sure the image scales down */
+        top: 20px; /* Add some margin from the top */
+    }
+
+    #text-block {
+        top: 0; /* Align text-block with the logo */
+        margin-top: 20px; /* Add space below the logo */
+        font-size: 14px; /* Adjust font size for smaller screens */
+    }
+
+    #chat-container {
+        width: 95%; /* Make the chat container take up more space */
+        padding: 10px; /* Reduce padding on smaller screens */
+    }
+
+    #user-input {
+        width: 60%; /* Adjust width for smaller screens */
+        margin-right: 5px; /* Reduce margin */
+    }
+
+    button {
+        width: 35%; /* Make the button take up more space */
+    }
+
+    #chat-history {
+        height: 200px; /* Reduce the height for smaller screens */
+    }
+}
+
+@media screen and (max-width: 480px) {
+    #background-element {
+        height: 100px; /* Further reduce the height */
+    }
+
+    #text-block {
+        font-size: 12px; /* Further reduce the font size */
+    }
+
+    #chat-container {
+        padding: 5px; /* Reduce padding further */
+    }
+
+    #user-input {
+        width: 55%; /* Adjust width for even smaller screens */
+    }
+
+    button {
+        width: 40%; /* Adjust button width */
+    }
+
+    #chat-history {
+        height: 150px; /* Further reduce the height */
+    }
+}
