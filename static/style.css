@@ -43,7 +43,7 @@ body {
     height: 180px;
     top: 10px; /* 10 pixels down from the top of the page */
     left: 10px; /* 10 pixels over from the right side of the page */
-    background-image: url('../images/shellbot_logo.png'); /* Adjust the path to your image */
+    background-image: url('images/shellbot_logo.png'); /* Adjust the path to your image */
     background-size: cover; /* Ensures the image covers the entire div */
     background-repeat: no-repeat; /* Prevents the image from repeating */
     z-index: 1; /* Lower z-index to sit behind the chat container */
