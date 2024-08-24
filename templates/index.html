@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chatbot</title>
+    <link rel="stylesheet" href="../static/style.css">
+</head>
+<body>
+    <div class="background-element">
+    </div>
+    <div id="text-block">
+        Welcome to Sheldon Rampton's pseudo-sentient, cybernetic, eclectic and electric ghost in the shell. Type your questions and comments, and I'll do my best to reply.
+    </div>
+    <div id="chat-container">
+        <div id="chat-history"></div>
+        <input type="text" id="user-input" placeholder="Type your message...">
+        <button onclick="sendMessage()">Send</button>
+    </div>
+    <script>
+async function sendMessage() {
+    const userInput = document.getElementById('user-input').value;
+    const response = await fetch('http://127.0.0.1:5000/chat', {  // Replace <your-new-url> with the desired URL
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ message: userInput })
+    });
+    const data = await response.json();
+    const chatHistory = document.getElementById('chat-history');
+    chatHistory.innerHTML += `<p><strong>You:</strong> ${userInput}</p>`;
+    chatHistory.innerHTML += `<p><strong>Shellbot:</strong> ${data.response.replace(/\n/g, '<br>')}</p>`;
+    document.getElementById('user-input').value = '';
+}
+    </script>
+</body>
+</html>

@@ -1,0 +1,64 @@
+#chat-container {
+    position: relative; /* Make sure the chat container is positioned and can use z-index */
+    width: 500px;
+    margin: 0 auto;
+    border: 1px solid #ccc;
+    padding: 20px;
+    background-color: white;
+    opacity: 85%;
+    z-index: 2; /* Lower z-index to sit behind the chat container */
+}
+
+#chat-history {
+    height: 300px;
+    overflow-y: scroll;
+    border-bottom: 1px solid #ccc;
+    margin-bottom: 20px;
+    background-color: white;
+}
+
+#chat-history p {
+    white-space: pre-wrap; /* Ensures that whitespace and line breaks are preserved */
+}
+
+#user-input {
+    width: 80%;
+    padding: 10px;
+    margin-right: 10px;
+    background-color: white;
+}
+
+button {
+    padding: 10px 20px;
+}
+
+body {
+    position: relative; /* Ensure that the body is the containing block for absolutely positioned elements */
+    background-color: #03b8fc;
+}
+
+.background-element {
+    position: absolute;
+    width: 180px;
+    height: 180px;
+    top: 10px; /* 10 pixels down from the top of the page */
+    left: 10px; /* 10 pixels over from the right side of the page */
+    background-image: url('../images/shellbot_logo.png'); /* Adjust the path to your image */
+    background-size: cover; /* Ensures the image covers the entire div */
+    background-repeat: no-repeat; /* Prevents the image from repeating */
+    z-index: 1; /* Lower z-index to sit behind the chat container */
+}
+
+#text-block {
+    position: absolute;
+    width: 180px;
+    top: 200px; /* Adjust this based on the height of your logo */
+    left: 10px;
+    color: white; /* Text color */
+    font-size: 16px; /* Adjust font size as needed */
+    z-index: 1; /* Ensure it appears above the background logo */
+    background-color: rgba(34, 43, 46, 0.8); /* Semi-transparent background */
+    padding: 10px;
+    box-sizing: border-box; /* Ensure padding is included in the width */
+}
+
