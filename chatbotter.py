@@ -25,6 +25,7 @@ import sqlite3
 import itertools
 import ast  # for converting embeddings saved as strings back to arrays
 from scipy import spatial  # for calculating vector similarities for search
+import json
 
 
 #### HELPER FUNCTIONS ###
@@ -737,22 +738,42 @@ class Asker:
                     message += next_article
         return message + question, articles
 
+    def add_to_history(self, conversation_history, role, content):
+        conversation_history.append({"role": role, "content": content})
+
+    def build_contextual_input(self, conversation_history, user_query):
+        # Concatenate previous messages and the current query
+        context = ""
+        for message in conversation_history[-10:]:  # Use the last 10 messages for context
+            context += f"{message['role']}: {message['content']}\n"
+        context += f"user: {user_query}\n"
+        return context
+
     def ask(
         self,
         query,
         model = None,
+        conversation_history = [],
         token_budget: int = 4096 - 500
     ):
         """Answers a query using GPT and a dataframe of relevant texts and embeddings."""
         if not model:
             model = self.gpt_model
-        message, articles = self.query_message(query, token_budget=token_budget)
+        if len(conversation_history) > 0:
+            self.add_to_history(conversation_history, "user", query)
+            for m in conversation_history:
+                print(m)
+            contextual_input = self.build_contextual_input(conversation_history, query)
+            message, articles = self.query_message(contextual_input, token_budget=token_budget)
+        else:
+            message, articles = self.query_message(query, token_budget=token_budget)
         if self.debug:
             print(message)
         messages = [
-            {"role": "system", "content": "You answer questions about sustainable energy and other activities related to climate change and global warming."},
+            {"role": "system", "content": self.introduction},
             {"role": "user", "content": message},
         ]
+
         response = self.openai_client.chat.completions.create(
             model=model,
             messages=messages,
