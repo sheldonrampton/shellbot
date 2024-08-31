@@ -12,6 +12,9 @@ from chatbotter import BatchGenerator, Asker
 import warnings
 import hashlib
 import time
+import psycopg2
+from psycopg2 import sql
+
 
 # Suppress specific DeprecationWarnings
 warnings.filterwarnings("ignore", category=DeprecationWarning)
@@ -52,6 +55,11 @@ class SocialData:
         embedding_model = "text-embedding-3-small",
         social_db_path: str = "social_media.db",
         gmail_db_path: str = 'gmail.db',
+        logs_database_name = None,
+        logs_user = None,
+        logs_password = None,
+        db_host = None,
+        db_port = None,
         excluded_text = [],
         sanitizations = [],
         gpt_model: str = "gpt-4o",  # selects which tokenizer to use
@@ -67,6 +75,13 @@ class SocialData:
         self.embedding_model = embedding_model
         self.social_db_path = social_db_path
         self.gmail_db_path = gmail_db_path
+        self.db_host = db_host if db_host is not None else os.getenv('DB_HOST')
+        self.db_port = db_port if db_port is not None else os.getenv('DB_PORT')
+        # self.db_user = db_user if db_user is not None else os.getenv('POSTGRES_USER')
+        # self.db_password = db_password if db_password is not None else os.getenv('POSTGRES_DB_PASSWORD')
+        self.logs_database_name = logs_database_name if logs_database_name is not None else os.getenv('SHELLBOT_DB_NAME')
+        self.logs_user = logs_user if logs_user is not None else os.getenv('SHELLBOT_USER')
+        self.logs_password = logs_password if logs_password is not None else os.getenv('SHELLBOT_USER_PASSWORD')
         self.excluded_text = excluded_text
         self.sanitizations = sanitizations
         self.gpt_model = gpt_model
@@ -77,6 +92,18 @@ class SocialData:
         self.debug = debug
         self.limit = limit
   
+    def database_connection(self):
+        conn = psycopg2.connect(
+            dbname=self.logs_database_name,
+            user=self.logs_user,
+            password=self.logs_password,
+            host=self.db_host,
+            port=self.db_port,
+            sslmode='allow'
+        )
+        cur = conn.cursor()
+        return conn, cur
+
     def fetch_data(self):
         """
         Retrieves the contents of the social_media and gmail databases
@@ -338,26 +365,6 @@ class SocialData:
 
         return df
 
-    def setup_database(self):
-        if os.path.exists(self.db_path) and self.overwrite_db:
-            os.remove(self.db_path)
-        if not os.path.exists(self.db_path):
-            conn = sqlite3.connect(self.db_path)
-            c = conn.cursor()
-            c.execute('''
-            CREATE TABLE IF NOT EXISTS SocialData (
-                vector_id TEXT PRIMARY KEY,
-                platform TEXT,
-                title TEXT,
-                unix_timestamp INT,
-                formatted_datetime TEXT,
-                content TEXT,
-                url TEXT
-            )
-            ''')
-            conn.commit()
-            conn.close()
-
     def setup_pinecone(self):
         # Check whether the index with the same name already exists - if so, delete it
         pinecone_api_key = os.environ.get('PINECONE_API_KEY')
@@ -472,14 +479,12 @@ class SocialData:
         return df
 
     def get_item(self, unique_id):
-        conn = sqlite3.connect(self.db_path)
-        cursor = conn.cursor()
-        # SQL query to retrieve the row with the specified unique_id
-        query = "SELECT title, url, content FROM SocialData WHERE vector_id = ?"
+        conn, cur = self.database_connection()
         try:
-            # Execute the query and fetch the row
-            cursor.execute(query, (unique_id, ))
-            row = cursor.fetchone()
+            # SQL query to retrieve the row with the specified unique_id
+            query = "SELECT title, url, content FROM socialdata WHERE vector_id = %s"
+            cur.execute(query, (unique_id, ))
+            row = cur.fetchone()
             conn.close()
 
             # Check if a row was found
@@ -488,7 +493,7 @@ class SocialData:
             else:
                 print(f"No row found with unique_id = {unique_id}")
                 return ['', '', '']
-        except sqlite3.Error as e:
+        except psycopg2.Error as e:
             print(f"An error occurred: {e}")
             return None
 
@@ -559,7 +564,6 @@ if __name__ == "__main__":
         # for piece in pieces:
         #     print(piece)
 
-    sd.setup_database()
     sd.setup_pinecone()
     # sd.debug = False
     sd.upsert_data()
