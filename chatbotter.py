@@ -26,6 +26,8 @@ import itertools
 import ast  # for converting embeddings saved as strings back to arrays
 from scipy import spatial  # for calculating vector similarities for search
 import json
+import psycopg2
+from psycopg2 import sql
 
 
 #### HELPER FUNCTIONS ###
@@ -795,72 +797,114 @@ class Asker:
 class ConversationLogger:
     def __init__(
         self,
-        db_path: str = "conversation_log.db",
+        # db_path: str = "conversation_log.db",
+        db_host = None,
+        db_port = None,
+        db_user = None,
+        db_password = None,
+        logs_database_name = None,
+        logs_user = None,
+        logs_password = None,
         overwrite_db = False,
         debug = False
+
     ) -> None:
-        self.db_path = db_path
+        self.db_host = db_host if db_host is not None else os.getenv('DB_HOST')
+        self.db_port = db_port if db_port is not None else os.getenv('DB_PORT')
+        self.db_user = db_user if db_user is not None else os.getenv('POSTGRES_USER')
+        self.db_password = db_password if db_password is not None else os.getenv('POSTGRES_DB_PASSWORD')
+        self.logs_database_name = logs_database_name if logs_database_name is not None else os.getenv('SHELLBOT_DB_NAME')
+        self.logs_user = logs_user if logs_user is not None else os.getenv('SHELLBOT_USER')
+        self.logs_password = logs_password if logs_password is not None else os.getenv('SHELLBOT_USER_PASSWORD')
         self.overwrite_db = overwrite_db
         self.debug = debug
         self.setup_database()
 
+    def database_connection(self):
+        conn = psycopg2.connect(
+            dbname=self.logs_database_name,
+            user=self.logs_user,
+            password=self.logs_password,
+            host=self.db_host,
+            port=self.db_port,
+            sslmode='allow'
+        )
+        cur = conn.cursor()
+        return conn, cur
+
+    def create_table(self, table_name, create_table_query):
+        conn, cur = self.database_connection()
+        cur.execute(create_table_query)
+        cur.execute(sql.SQL("GRANT ALL PRIVILEGES ON TABLE {} TO {}").format(
+            sql.Identifier(table_name),
+            sql.Identifier(self.logs_user)
+        ))
+        conn.commit()
+        cur.close()
+        conn.close()
+
     def setup_database(self):
-        if os.path.exists(self.db_path) and self.overwrite_db:
-            os.remove(self.db_path)
-        if not os.path.exists(self.db_path):
-            conn = sqlite3.connect(self.db_path)
-            c = conn.cursor()
-            c.execute('''
-            CREATE TABLE IF NOT EXISTS Entries (
-                session_id TEXT,
-                entry_timestamp TEXT,
-                user_input TEXT,
-                bot_response TEXT
-            )
-            ''')
-            conn.commit()
-            conn.close()
+        create_table_query = """
+        CREATE TABLE IF NOT EXISTS entries (
+            session_id TEXT,
+            entry_timestamp TEXT,
+            user_input TEXT,
+            bot_response TEXT
+        );
+        """
+        self.create_table('entries', create_table_query)
 
     def post_entry(self, entry):
-        # Upsert content vectors in content namespace - this can take a few minutes
-        if self.debug:
-            print("Posting conversation log entry namespace..")
-        conn = sqlite3.connect(self.db_path)
-        c = conn.cursor()
-        c.execute('''
-        INSERT INTO Entries (session_id, entry_timestamp, user_input, bot_response)
-        VALUES (?, ?, ?, ?)
-        ''', (entry['session_id'], entry['timestamp'], entry['user_input'], entry['bot_response']))
-        if self.debug:
-            print("Inserted entry ", entry['user_input'])
+        conn, cur = self.database_connection()
+
+        # SQL query to insert the data
+        insert_query = """
+        INSERT INTO entries (session_id, entry_timestamp, user_input, bot_response)
+        VALUES (%s, %s, %s, %s);
+        """
+
+        # Execute the query with the data
+        cur.execute(insert_query, (
+            entry['session_id'],
+            entry['timestamp'],
+            entry['user_input'],
+            entry['bot_response']
+        ))
+
+        # Commit the transaction
         conn.commit()
+
+        # Close the cursor and connection
+        cur.close()
         conn.close()
         if self.debug:
-            print("Entry inserted successfully.")
+            print("Entry posted successfully to the 'entries' table.")
 
     def get_entries(self, limit=0):
-        conn = sqlite3.connect(self.db_path)
-        c = conn.cursor()
-        # SQL query for Entries table
-        query = """
-        SELECT session_id, entry_timestamp, user_input, bot_response 
-        FROM Entries 
+        conn, cur = self.database_connection()
+
+        # SQL query to fetch all rows from the 'entries' table
+        fetch_query = """
+        SELECT * FROM entries;
         """
         if limit > 0:
-            query += " LIMIT " + str(self.limit)
-        # Execute the queries
-        rows = c.execute(query).fetchall()
+            fetch_query += " LIMIT " + str(self.limit)
+        cur.execute(fetch_query)
+        rows = cur.fetchall()
+        cur.close()
+        conn.close()
+
+        # Process and print the fetched rows
         results = []
         for row in rows:
-            print(row)
+            if self.debug:
+                print(row)
             results.append({
                 'session_id': row[0],
                 'entry_timestamp': row[1],
                 'user_input': row[2],
                 'bot_response': row[3]
             })
-        conn.commit()
-        conn.close()
         return results
 
 

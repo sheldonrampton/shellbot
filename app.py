@@ -103,12 +103,5 @@ def list_logs():
     return jsonify(logs)
 
 
-# def chat():
-#     query = request.json.get('message')
-#     response, references, articles = asker.ask(query)
-#     # print(references)
-#     # print(articles)
-#     return jsonify({'response': response})
-
 if __name__ == '__main__':
     app.run(debug=True)
