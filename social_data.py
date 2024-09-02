@@ -1,5 +1,4 @@
 from openai import OpenAI # for calling the OpenAI API
-import sqlite3
 import datetime
 import re
 from bs4 import BeautifulSoup
@@ -53,8 +52,9 @@ class SocialData:
         openai_client,
         batch_size = 1000,
         embedding_model = "text-embedding-3-small",
-        social_db_path: str = "social_media.db",
-        gmail_db_path: str = 'gmail.db',
+        social_db_name: str = 'social_posts',
+        gmail_db_name: str = 'gmail_messages',
+        knowledge_db_name: str = 'shellbot_knowledge',
         logs_database_name = None,
         logs_user = None,
         logs_password = None,
@@ -65,16 +65,15 @@ class SocialData:
         gpt_model: str = "gpt-4o",  # selects which tokenizer to use
         pinecone_index_name = "shellbot-embeddings2",
         overwrite_pinecone = False,
-        db_path = 'shellbot2.db',
-        overwrite_db = False,
         limit = 0,
         debug = False
     ) -> None:
         self.openai_client = openai_client
         self.batch_size = batch_size
         self.embedding_model = embedding_model
-        self.social_db_path = social_db_path
-        self.gmail_db_path = gmail_db_path
+        self.social_db_name = social_db_name
+        self.gmail_db_name = gmail_db_name
+        self.knowledge_db_name = knowledge_db_name
         self.db_host = db_host if db_host is not None else os.getenv('DB_HOST')
         self.db_port = db_port if db_port is not None else os.getenv('DB_PORT')
         # self.db_user = db_user if db_user is not None else os.getenv('POSTGRES_USER')
@@ -87,8 +86,7 @@ class SocialData:
         self.gpt_model = gpt_model
         self.pinecone_index_name = pinecone_index_name
         self.overwrite_pinecone = overwrite_pinecone
-        self.db_path = db_path
-        self.overwrite_db = overwrite_db
+        # self.overwrite_db = overwrite_db
         self.debug = debug
         self.limit = limit
   
@@ -110,25 +108,20 @@ class SocialData:
         and combines them into a single 
         """
 
-        # Connect to the SQLite databases
-        conn_social = sqlite3.connect(self.social_db_path)
-        conn_gmail = sqlite3.connect(self.gmail_db_path)
-        
-        # Create cursors for each connection
-        cursor_social = conn_social.cursor()
-        cursor_gmail = conn_gmail.cursor()
+        # Connect to the Postgres databases
+        conn, cur = self.database_connection()
         
         # SQL query for SocialPosts table
-        query_social = """
-        SELECT 'social' AS source, id, platform, platform_id as title,
-        CAST(timestamp AS INTEGER) AS unix_timestamp, 
-        content, url
-        FROM SocialPosts 
+        query_social = f"""
+        SELECT 'social' AS source, id, platform, platform_id AS title,
+        CAST(timestamp AS INTEGER) AS unix_timestamp, content, url
+        FROM {self.social_db_name}
         """
         if self.limit > 0:
             query_social += " LIMIT " + str(self.limit)
         # Execute the queries
-        social_results = cursor_social.execute(query_social).fetchall()
+        cur.execute(query_social)  # Execute the query
+        social_results = cur.fetchall()  # Fetch all the results
         # Load the results into a Pandas DataFrame
         df_social = pd.DataFrame(social_results, columns=[
             'source', 'id', 'platform', 'title', 'unix_timestamp',
@@ -139,15 +132,16 @@ class SocialData:
         df_social['title'] = df_social['title'].apply(lambda x: self.truncated_string(x, max_tokens=30))
 
         # SQL query for GmailMessages table
-        query_gmail = """
+        query_gmail = f"""
         SELECT 'gmail' AS source, id, 'Email' as platform, subject as title,
-        timestamp AS unix_timestamp,
+        CAST(timestamp AS INTEGER) AS unix_timestamp,
         message as content, from_email, to_emails 
-        FROM GmailMessages 
+        FROM {self.gmail_db_name} 
         """
         if self.limit > 0:
             query_gmail += " LIMIT " + str(self.limit)
-        gmail_results = cursor_gmail.execute(query_gmail).fetchall()
+        cur.execute(query_gmail)  # Execute the query
+        gmail_results = cur.fetchall()  # Fetch all the results
         # Load the results into a Pandas DataFrame
         df_gmail = pd.DataFrame(gmail_results, columns=[
             'source', 'id', 'platform', 'title', 'unix_timestamp',
@@ -158,9 +152,9 @@ class SocialData:
         # Remove rows where the "content" column contains any of the strings in the list
         df_gmail = df_gmail[~df_gmail['content'].str.contains(pattern, na=False)]
 
-        # Combine 'from_email' and 'to_emails' into a single column named 'participants'
+        # Combine 'from_email' and 'to_emails' into a single column named 'url'
         df_gmail['url'] = df_gmail['from_email'] + ', ' + df_gmail['to_emails']
-        # Optionally, drop the original 'from_email' and 'to_emails' columns if they are no longer needed
+        # Drop the original 'from_email' and 'to_emails' columns as they are no longer needed
         df_gmail = df_gmail.drop(columns=['from_email', 'to_emails'])
 
         # # Now df has the combined 'participants' column
@@ -170,14 +164,13 @@ class SocialData:
         df_combined['title'] = df_combined['datetime'] + " " + df_combined['platform'] + ": " + df_combined['title']
 
         # Close the database connections
-        conn_social.close()
-        conn_gmail.close()
+        conn.close()
         
         df = df_combined.sort_values(by='unix_timestamp', ascending=True)
         # Remove duplicate content
         df = df.drop_duplicates(subset='content', keep='first')
 
-        # Apply clean_message() to 'content' column where 'platform' is "Email"
+        # Apply cleanup_email() to 'content' column where 'platform' is "Email"
         df.loc[df['platform'] == 'Email', 'content'] = df.loc[df['platform'] == 'Email', 'content'].apply(self.cleanup_email)
         df['content'] = df['content'].apply(lambda x: self.truncated_string(x))
         df['url'] = df['url'].fillna('')
@@ -408,8 +401,7 @@ class SocialData:
         # Upsert content vectors in content namespace - this can take a few minutes
         if self.debug:
             print("Uploading vectors to content namespace..")
-        conn = sqlite3.connect(self.db_path)
-        c = conn.cursor()
+        conn, cur = self.database_connection()
         df_batcher = BatchGenerator(200)
         for batch_df in df_batcher(self.df):
             self.pinecone_index.upsert(vectors=zip(
@@ -421,15 +413,15 @@ class SocialData:
             ), namespace='content')
             for rownum, row in batch_df.iterrows():
                 try:
-                    c.execute('''
-                    INSERT INTO SocialData (vector_id, platform, title, unix_timestamp, 
+                    cur.execute(f'''
+                    INSERT INTO {self.knowledge_db_name} (vector_id, platform, title, unix_timestamp, 
                     formatted_datetime, content, url)
-                    VALUES (?, ?, ?, ?, ?, ?, ?)
+                    VALUES (%s, %s, %s, %s, %s, %s, %s)
                     ''', (row['vector_id'], row['platform'], row['title'], row['unix_timestamp'],
                     row['datetime'], row['content'], row['url']))
                     if self.debug:
                         print("Inserted row ", rownum, row['vector_id'], row['title'])
-                except sqlite3.Error as e:
+                except psycopg2.Error as e:
                     print(f"An error occurred: {e}")
                     print(row)
         conn.commit()
@@ -482,7 +474,7 @@ class SocialData:
         conn, cur = self.database_connection()
         try:
             # SQL query to retrieve the row with the specified unique_id
-            query = "SELECT title, url, content FROM socialdata WHERE vector_id = %s"
+            query = f"SELECT title, url, content FROM {self.knowledge_db_name} WHERE vector_id = %s"
             cur.execute(query, (unique_id, ))
             row = cur.fetchone()
             conn.close()
@@ -545,7 +537,19 @@ if __name__ == "__main__":
       organization='***REMOVED***',
       project='***REMOVED***',
     )
-    sd = SocialData(openai_client, excluded_text = sig_lines, sanitizations = sanitizations, overwrite_pinecone = True, overwrite_db = True)
+    sd = SocialData(
+        openai_client,
+        social_db_name = 'social_posts',
+        gmail_db_name = 'gmail_messages',
+        knowledge_db_name = 'shellbot_knowledge_test',
+        excluded_text = sig_lines,
+        sanitizations = sanitizations,
+        pinecone_index_name = "shellbot-pytest",
+        overwrite_pinecone = True,
+        # overwrite_db = False,
+        limit = 10,
+        debug = True
+    )
     df = sd.fetch_data()
     # print(sd.df.head(50))
     # nan_rows = df[df['url'].isna()]
