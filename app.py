@@ -38,7 +38,7 @@ asker = Asker(openai_client, storage = sd,
 )
 logger = ConversationLogger()
 
-app = Flask(__name__)
+app = Flask(__name__, static_url_path='/static', static_folder='static')
 CORS(app)
 app.secret_key = os.urandom(24)  # Secret key for session management
 app.config['SESSION_TYPE'] = 'filesystem'  # You can also use 'redis', 'mongodb', etc.
