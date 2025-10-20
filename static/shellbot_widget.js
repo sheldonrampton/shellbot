@@ -10,7 +10,7 @@ document.addEventListener("DOMContentLoaded", () => {
   document.body.appendChild(chatBtn);
 
   const iframe = document.createElement('iframe');
-  iframe.src = 'https://shellbot.ai';
+  iframe.src = 'https://www.shellbot.ai';
   iframe.style.cssText = `
     position:fixed;bottom:80px;right:20px;width:400px;height:600px;
     border:1px solid #444;border-radius:10px;display:none;
