@@ -21,6 +21,7 @@ In additional to email messages and social media posts,
 version 2.0 will include other documents containing Sheldon's
 personal knowledge, which may include:
 - MS Word, PDF and other documents stored on Sheldon's laptop
+- Sheldon's books and other writings
 - Google docs
 - Google calendar
 - Contacts
@@ -48,6 +49,10 @@ personal knowledge, which may include:
 - nextdoor.com
 - Mastodon (mas.to)
 - racquetmates.net
+- Other documents from Sheldon's life
+  - Letters
+  - Journals
+  - Printed writings
 
 Core design choices:
 
