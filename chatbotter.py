@@ -1,7 +1,7 @@
 """
 chatbotter.py:
 Generates embeddings from the GEM wiki, saves the embeddings in Pinecone,
-and saves the article segments in sqlite.
+and saves the article segments in postgres.
 
 For more information see:
 https://cookbook.openai.com/examples/embedding_wikipedia_articles_for_search
@@ -21,13 +21,15 @@ from pinecone import Pinecone, ServerlessSpec
 import hashlib
 import time
 import numpy as np
-import sqlite3
 import itertools
 import ast  # for converting embeddings saved as strings back to arrays
 from scipy import spatial  # for calculating vector similarities for search
 import json
 import psycopg2
 from psycopg2 import sql
+import pickle
+from tenacity import retry, wait_exponential, stop_after_attempt, retry_if_exception_type
+import requests
 
 
 #### HELPER FUNCTIONS ###
@@ -52,7 +54,8 @@ class WikiExtractor:
         user_agent: str = 'sheldon-ramptons-agent',
         gpt_model: str = "gpt-4o",  # selects which tokenizer to use
         limit = False,
-        debug = False
+        debug = False,
+        pickle_file = None
     ) -> None:
         self.site_name = site_name
         self.site = mwclient.Site(site_name)
@@ -82,21 +85,54 @@ class WikiExtractor:
             "References and notes",
         ]
         self.debug = debug
+        self.pickle_file = pickle_file
     
+    @retry(
+        retry=retry_if_exception_type(requests.exceptions.RequestException),
+        wait=wait_exponential(multiplier=1, min=2, max=60),
+        stop=stop_after_attempt(5)
+    )
+    def query_wiki(self, query):
+        result = self.gw.opensearch(query, results=1)
+        if result and len(result[0]) >= 3:
+            # Only assign if there is a valid result with at least 3 elements
+            return result[0][2]
+        else:
+            print(f"Had trouble getting the url for {query}")
+            return 'https://' + self.site_name + '/' + query.replace(" ", "_")
+
+    @retry(
+        retry=retry_if_exception_type(requests.exceptions.RequestException),
+        wait=wait_exponential(multiplier=1, min=2, max=60),
+        stop=stop_after_attempt(5)
+    )
+    def page_text(self, title):
+        page = self.site.pages[title]
+        return page.text()
+
     # Makes chunks out of an input DataFrame
     def list_of_titles(
-        self: int
+        self
     ) -> set[str]:
         """Return a set of page titles in a given Wiki category and its subcategories."""
         urls = {}
         pages = self.site.allpages()
         titles = set()
+        i = 0
         if self.limit:
             pages = itertools.islice(pages, self.limit)
         for page in pages:
             title = page.name
             titles.add(title)
-            urls[title] = self.gw.opensearch(title, results=1)[0][2]
+            try:
+                # Example query to the MediaWiki
+                urls[title] = self.query_wiki(title)
+            except requests.exceptions.RequestException as e:
+                print(f"Failed to get URL for {title} after multiple retries: {e}")
+                urls[title] = 'https://' + self.site_name + '/' + title.replace(" ", "_")
+            if i % 100 == 0:
+                print(title + ": " + urls[title])
+            i += 1
         return titles, urls
 
     def titles_from_category(
@@ -107,12 +143,19 @@ class WikiExtractor:
     ) -> set[str]:
         """Return a set of page titles in a given Wiki category and its subcategories."""
         titles = set()
-        for cm in category.members():
+        try:
+            # Example query to the MediaWiki
+            category_members = category.members()
+        except:
+            print(f"Failed to get members for {category}")
+            return(titles, category_names)
+        for cm in category_members:
             if type(cm) == mwclient.page.Page:
                 # ^type() used instead of isinstance() to catch match w/ no inheritance
                 titles.add(cm.name)
             elif isinstance(cm, mwclient.listing.Category) and max_depth > 0:
                 category_names.add(cm.name)
+                print("Category", str(max_depth) + ": " + cm.name)
                 deeper_titles, category_names = self.titles_from_category(cm, category_names = category_names, max_depth=max_depth - 1)
                 titles.update(deeper_titles)
         return titles, category_names
@@ -154,8 +197,11 @@ class WikiExtractor:
             - the first element is a list of parent subtitles, starting with the page title
             - the second element is the text of the subsection (but not any children)
         """
-        page = self.site.pages[title]
-        text = page.text()
+        try:
+            text = self.page_text(title)
+        except:
+            print(f"Failed to get full text for {title} after multiple retries")
+            return [([title], title)]
         parsed_text = mwparserfromhell.parse(text)
         headings = [str(h) for h in parsed_text.filter_headings()]
         if headings:
@@ -273,7 +319,6 @@ class WikiExtractor:
         # otherwise no split was found, so just truncate (should be very rare)
         return [self.truncated_string(string, max_tokens=max_tokens)]
 
-
     def compile_titles(
         self,
         categories = None,
@@ -292,25 +337,61 @@ class WikiExtractor:
             if self.limit:
                 titles = set(list(titles)[:self.limit])
             urls = {}
+            i = 0
             for title in titles:
-                urls[title] = self.gw.opensearch(title, results=1)[0][2]
+                if i % 100 == 0:
+                    print(f"{i}: {title}")
+                i += 1
+                try:
+                    # Example query to the MediaWiki
+                    urls[title] = self.query_wiki(title)
+                except requests.exceptions.RequestException as e:
+                    print(f"Failed to get URL for {title} after multiple retries: {e}")
+                    urls[title] = 'https://' + self.site_name + '/' + title.replace(" ", "_")
+
         else:
             titles, urls = self.list_of_titles()
             category_names = set()
-        return titles, urls, category_names
 
+        if self.pickle_file is not None:
+                # Example data: A set containing a list of strings, a dictionary, and another set containing URLs
+            data = ({
+                "titles": titles,
+                "urls": urls,
+                "category_names": category_names
+            })
+            # Saving the data to a file
+            with open(self.pickle_file, "wb") as f:
+                pickle.dump(data, f)
+        return titles, urls, category_names
 
     def compile_wiki_strings(
         self,
         categories = None,
         max_depth: int = 1
     ):
-        titles, urls, category_names = self.compile_titles(categories = categories, max_depth = max_depth)
+        if self.pickle_file is not None and os.path.exists(self.pickle_file):
+            # File exists, load data from the file using pickle
+            print(f"FOUND {self.pickle_file}")
+            with open(self.pickle_file, "rb") as f:
+                data = pickle.load(f)
+                titles = data["titles"]
+                urls = data["urls"]
+                category_names =  data["titles"]
+                print("Loaded data from file.")
+        else:
+            print(f"DIDN'T FIND {self.pickle_file}")
+            titles, urls, category_names = self.compile_titles(categories = categories, max_depth = max_depth)
+            print("Generated data and saved to file.")
         # split pages into sections
         # may take ~1 minute per 100 articles
         wiki_sections = []
+        i = 0
         for title in titles:
             wiki_sections.extend(self.all_subsections_from_title(title))
+            if i % 100 == 0:
+                print(title)
+            i += 1
         if self.debug:
             print(f"Found {len(wiki_sections)} sections in {len(titles)} pages.")
         wiki_sections = [self.clean_section(ws) for ws in wiki_sections]
@@ -334,6 +415,20 @@ class WikiExtractor:
             # print example data
             print(strings[1])
         return strings, urls
+
+    def chunk_file(self, file_path, title=None, max_tokens=1000):
+        if title is None:
+            title = file_path
+        try:
+            with open(file_path, 'r', encoding='utf-8') as file:
+                text = file.read()
+        except UnicodeDecodeError:
+            # If UTF-8 fails, fall back to ISO-8859-1 (or another encoding)
+            with open(file_path, 'r', encoding='ISO-8859-1') as file:
+                text = file.read()
+        return self.split_strings_from_subsection(
+            [[title], text], max_tokens = max_tokens
+        )
 
 
 class Embedder:
@@ -375,6 +470,7 @@ class Embedder:
         embeddings = []
         self.urls = urls
         for batch_start in range(0, len(strings), self.batch_size):
+            print(f"Embedding a batch of {self.batch_size} strings...")
             batch_end = batch_start + self.batch_size
             batch = strings[batch_start:batch_end]
             if self.debug:
@@ -401,7 +497,7 @@ class Embedder:
         return df
 
 
-# Models a simple batch generator that make chunks out of an input DataFrame
+# Models a simple batch generator that makes chunks out of an input DataFrame
 class BatchGenerator:
     def __init__(self, batch_size: int = 10) -> None:
         self.batch_size = batch_size
@@ -427,7 +523,12 @@ class Storer:
         self,
         openai_client,
         df = None,
-        db_path = 'gem_wiki_50.db',
+        knowledge_db_name: str = 'gem_wiki_50_knowledge',
+        logs_database_name = None,
+        logs_user = None,
+        logs_password = None,
+        db_host = None,
+        db_port = None,
         pinecone_index_name = 'gem-wiki-50',
         embedding_model = "text-embedding-3-small",
         overwrite_db = False,
@@ -436,7 +537,12 @@ class Storer:
     ) -> None:
         self.openai_client = openai_client
         self.df = df
-        self.db_path = db_path
+        self.db_host = db_host if db_host is not None else os.getenv('DB_HOST')
+        self.db_port = db_port if db_port is not None else os.getenv('DB_PORT')
+        self.knowledge_db_name = knowledge_db_name
+        self.logs_database_name = logs_database_name if logs_database_name is not None else os.getenv('SHELLBOT_DB_NAME')
+        self.logs_user = logs_user if logs_user is not None else os.getenv('SHELLBOT_USER')
+        self.logs_password = logs_password if logs_password is not None else os.getenv('SHELLBOT_USER_PASSWORD')
         self.pinecone_index_name = pinecone_index_name
         self.embedding_model = embedding_model
         self.overwrite_db = overwrite_db
@@ -447,22 +553,39 @@ class Storer:
         if df is not None:
             self.upsert_data()
 
+    def database_connection(self):
+        conn = psycopg2.connect(
+            dbname=self.logs_database_name,
+            user=self.logs_user,
+            password=self.logs_password,
+            host=self.db_host,
+            port=self.db_port,
+            sslmode='allow'
+        )
+        cur = conn.cursor()
+        return conn, cur
+
+    def create_table(self, table_name, create_table_query):
+        conn, cur = self.database_connection()
+        cur.execute(create_table_query)
+        cur.execute(sql.SQL("GRANT ALL PRIVILEGES ON TABLE {} TO {}").format(
+            sql.Identifier(table_name),
+            sql.Identifier(self.logs_user)
+        ))
+        conn.commit()
+        cur.close()
+        conn.close()
+
     def setup_database(self):
-        if os.path.exists(self.db_path) and self.overwrite_db:
-            os.remove(self.db_path)
-        if not os.path.exists(self.db_path):
-            conn = sqlite3.connect(self.db_path)
-            c = conn.cursor()
-            c.execute('''
-            CREATE TABLE IF NOT EXISTS ArticleChunks (
-                unique_id TEXT PRIMARY KEY,
-                title TEXT,
-                content TEXT,
-                url TEXT
-            )
-            ''')
-            conn.commit()
-            conn.close()
+        create_table_query = f"""
+        CREATE TABLE IF NOT EXISTS {self.knowledge_db_name} (
+            unique_id TEXT PRIMARY KEY,
+            title TEXT,
+            content TEXT,
+            url TEXT
+        );
+        """
+        self.create_table(self.knowledge_db_name, create_table_query)
 
     def setup_pinecone(self):
         # Check whether the index with the same name already exists - if so, delete it
@@ -505,10 +628,10 @@ class Storer:
 
     def upsert_data(self):
         # Upsert content vectors in content namespace - this can take a few minutes
+        i = 0
         if self.debug:
             print("Uploading vectors to content namespace..")
-        conn = sqlite3.connect(self.db_path)
-        c = conn.cursor()
+        conn, cur = self.database_connection()
         df_batcher = BatchGenerator(200)
         for batch_df in df_batcher(self.df):
             self.pinecone_index.upsert(vectors=zip(
@@ -519,12 +642,20 @@ class Storer:
                 ]
             ), namespace='content')
             for rownum, row in batch_df.iterrows():
-                c.execute('''
-                INSERT INTO ArticleChunks (unique_id, title, content, url)
-                VALUES (?, ?, ?, ?)
-                ''', (row['vector_id'], row['title'], row['text'], row['url']))
-                if self.debug:
-                    print("Inserted row ", rownum, row['vector_id'], row['title'])
+                if i % 100 == 0:
+                    print("Upserting " + row['title'])
+                i += 1
+                try:
+                    cur.execute(f'''
+                    INSERT INTO {self.knowledge_db_name} (unique_id, title, content, url)
+                    VALUES (%s, %s, %s, %s)
+                    ON CONFLICT (unique_id) DO NOTHING
+                    ''', (row['vector_id'], row['title'], row['text'], row['url']))
+                    if self.debug:
+                        print("Inserted row ", rownum, row['vector_id'], row['title'])
+                except psycopg2.Error as e:
+                    print(f"An error occurred: {e}")
+                    print(row)
         conn.commit()
         conn.close()
         if self.debug:
@@ -534,14 +665,12 @@ class Storer:
             print(self.pinecone_index.describe_index_stats())
 
     def get_article_chunk(self, unique_id):
-        conn = sqlite3.connect(self.db_path)
-        cursor = conn.cursor()
-        # SQL query to retrieve the row with the specified unique_id
-        query = "SELECT title, url, content FROM ArticleChunks WHERE unique_id = ?"
+        conn, cur = self.database_connection()
         try:
-            # Execute the query and fetch the row
-            cursor.execute(query, (unique_id, ))
-            row = cursor.fetchone()
+            # SQL query to retrieve the row with the specified unique_id
+            query = f"SELECT title, url, content FROM {self.knowledge_db_name} WHERE unique_id = %s"
+            cur.execute(query, (unique_id, ))
+            row = cur.fetchone()
             conn.close()
 
             # Check if a row was found
@@ -550,9 +679,9 @@ class Storer:
             else:
                 print(f"No row found with unique_id = {unique_id}")
                 return ['', '', '']
-        except sqlite3.Error as e:
+        except psycopg2.Error as e:
             print(f"An error occurred: {e}")
-            return None
+            return ['', '', '']
 
     # search function
     def get_pinecone_matches(
@@ -577,9 +706,10 @@ class Storer:
             top_k=top_n
         )
 
-        print(f'\nMost similar results to {query} in "content" namespace:\n')
-        if not query_result.matches:
-            print('no query result')
+        if self.debug:
+            print(f'\nMost similar results to {query} in "content" namespace:\n')
+            if not query_result.matches:
+                print('no query result')
         
         matches = query_result.matches
         ids = [res.id for res in matches]
@@ -589,13 +719,6 @@ class Storer:
                            })
         
         df['title'], df['url'], df['content'] = zip(*df['id'].apply(lambda x: self.get_article_chunk(x)))
-
-        counter = 0
-        # for k,v in df.iterrows():
-        #     counter += 1
-        #     print(f'{v.title} (score = {v.score})')
-
-        # print('\n')
         return df
 
     def query_article(self, query, namespace, top_k=5):
@@ -763,8 +886,9 @@ class Asker:
             model = self.gpt_model
         if len(conversation_history) > 0:
             self.add_to_history(conversation_history, "user", query)
-            for m in conversation_history:
-                print(m)
+            if self.debug:
+                for m in conversation_history:
+                    print(m)
             contextual_input = self.build_contextual_input(conversation_history, query)
             message, articles = self.query_message(contextual_input, token_budget=token_budget)
             if message == "I could not find an answer.":
@@ -790,7 +914,6 @@ class Asker:
             references += "<li><a href=\"" + url  + "\">" + title + "</a></li>"
         references += "</ul>"
 
-        # print(response_message)
         return response_message, references, articles
 
 
@@ -805,6 +928,7 @@ class ConversationLogger:
         logs_database_name = None,
         logs_user = None,
         logs_password = None,
+        table_name = 'entries', # the name of the table where database entries are logged
         overwrite_db = False,
         debug = False
 
@@ -816,6 +940,7 @@ class ConversationLogger:
         self.logs_database_name = logs_database_name if logs_database_name is not None else os.getenv('SHELLBOT_DB_NAME')
         self.logs_user = logs_user if logs_user is not None else os.getenv('SHELLBOT_USER')
         self.logs_password = logs_password if logs_password is not None else os.getenv('SHELLBOT_USER_PASSWORD')
+        self.table_name = table_name
         self.overwrite_db = overwrite_db
         self.debug = debug
         self.setup_database()
@@ -844,22 +969,22 @@ class ConversationLogger:
         conn.close()
 
     def setup_database(self):
-        create_table_query = """
-        CREATE TABLE IF NOT EXISTS entries (
+        create_table_query = f"""
+        CREATE TABLE IF NOT EXISTS {self.table_name} (
             session_id TEXT,
             entry_timestamp TEXT,
             user_input TEXT,
             bot_response TEXT
         );
         """
-        self.create_table('entries', create_table_query)
+        self.create_table(self.table_name, create_table_query)
 
     def post_entry(self, entry):
         conn, cur = self.database_connection()
 
         # SQL query to insert the data
-        insert_query = """
-        INSERT INTO entries (session_id, entry_timestamp, user_input, bot_response)
+        insert_query = f"""
+        INSERT INTO {self.table_name} (session_id, entry_timestamp, user_input, bot_response)
         VALUES (%s, %s, %s, %s);
         """
 
@@ -878,14 +1003,14 @@ class ConversationLogger:
         cur.close()
         conn.close()
         if self.debug:
-            print("Entry posted successfully to the 'entries' table.")
+            print(f"Entry posted successfully to the '{self.table_name}' table.")
 
     def get_entries(self, limit=0):
         conn, cur = self.database_connection()
 
         # SQL query to fetch all rows from the 'entries' table
-        fetch_query = """
-        SELECT * FROM entries;
+        fetch_query = f"""
+        SELECT * FROM {self.table_name};
         """
         if limit > 0:
             fetch_query += " LIMIT " + str(self.limit)
@@ -909,7 +1034,10 @@ class ConversationLogger:
 
 
 if __name__ == "__main__":
-    extractor = WikiExtractor()
+    extractor = WikiExtractor(
+        site_name = "www.gem.wiki",
+        url = 'https://www.gem.wiki/w/api.php'
+    )
     wiki_strings, urls = extractor.compile_wiki_strings()
     openai_client = OpenAI(
         organization='***REMOVED***',
