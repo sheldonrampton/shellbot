@@ -47,8 +47,12 @@ personal knowledge, which may include:
 - del.icio.us
 - disqus.com
 - nextdoor.com
+- nuams.com
+- nucivic.com
+- sheldonrampton@gmail.com Google docs (some NuCivic stuff)
 - Mastodon (mas.to)
 - racquetmates.net
+- PR Watch and Sourcewatch archives (downloadable on prwatch.org)
 - Other documents from Sheldon's life
   - Letters
   - Journals
