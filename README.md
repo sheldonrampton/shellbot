@@ -17,6 +17,16 @@ functionality:
 
 Goal: unify scattered info, preserve provenance, and rank it by recency + “current-belief alignment.”
 
+Shellbot 2.0 will let me find information from all of the places
+where I have created content. It will be a "chat-based search
+engine" that will not only find relevant content but will summarize
+it in response to prompts such as, "What do you think about Julie
+Ann Horvath?" or "How do your experiences as a Mormon missionary
+relate to your understanding of cognitive biases?" or "Expand
+upon your story idea for 'Meeting Mary Again, Ten Years Later."
+In addition to responses which summarize my relevant content, it
+will provide references back to the original source(s).
+
 In additional to email messages and social media posts,
 version 2.0 will include other documents containing Sheldon's
 personal knowledge, which may include:

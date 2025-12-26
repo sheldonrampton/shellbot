@@ -11,6 +11,9 @@ This MCP server provides access to a knowledge base containing:
 
 The content is stored in PostgreSQL and indexed in a Pinecone vector database for semantic search.
 
+It uses the social_data.py script from Shellbot 1.0, lightly edited
+to remove dependencies on chatbotter.py's write functionality.
+
 ## Installation
 
 1. Install dependencies:

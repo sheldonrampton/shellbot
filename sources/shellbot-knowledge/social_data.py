@@ -7,7 +7,7 @@ import pandas as pd
 import tiktoken  # for counting tokens
 from itertools import islice
 from pinecone import Pinecone, ServerlessSpec
-from chatbotter import BatchGenerator, Asker
+# from chatbotter import BatchGenerator, Asker
 import warnings
 import hashlib
 import time
@@ -397,39 +397,39 @@ class SocialData:
             # Confirm our index was created
             print(pinecone.list_indexes())
 
-    def upsert_data(self):
-        # Upsert content vectors in content namespace - this can take a few minutes
-        if self.debug:
-            print("Uploading vectors to content namespace..")
-        conn, cur = self.database_connection()
-        df_batcher = BatchGenerator(200)
-        for batch_df in df_batcher(self.df):
-            self.pinecone_index.upsert(vectors=zip(
-                batch_df.vector_id, batch_df.embedding,
-                [{**a, **b} for a, b in zip(
-                    [{ "title": t } for t in batch_df.title ],
-                    [{ "url": u } for u in batch_df.url ])
-                ]
-            ), namespace='content')
-            for rownum, row in batch_df.iterrows():
-                try:
-                    cur.execute(f'''
-                    INSERT INTO {self.knowledge_db_name} (vector_id, platform, title, unix_timestamp, 
-                    formatted_datetime, content, url)
-                    VALUES (%s, %s, %s, %s, %s, %s, %s)
-                    ''', (row['vector_id'], row['platform'], row['title'], row['unix_timestamp'],
-                    row['datetime'], row['content'], row['url']))
-                    if self.debug:
-                        print("Inserted row ", rownum, row['vector_id'], row['title'])
-                except psycopg2.Error as e:
-                    print(f"An error occurred: {e}")
-                    print(row)
-        conn.commit()
-        conn.close()
-        if self.debug:
-            print("Records inserted successfully.")
-            # Check index size for each namespace to confirm all of our docs have loaded
-            print(self.pinecone_index.describe_index_stats())
+    # def upsert_data(self):
+    #     # Upsert content vectors in content namespace - this can take a few minutes
+    #     if self.debug:
+    #         print("Uploading vectors to content namespace..")
+    #     conn, cur = self.database_connection()
+    #     df_batcher = BatchGenerator(200)
+    #     for batch_df in df_batcher(self.df):
+    #         self.pinecone_index.upsert(vectors=zip(
+    #             batch_df.vector_id, batch_df.embedding,
+    #             [{**a, **b} for a, b in zip(
+    #                 [{ "title": t } for t in batch_df.title ],
+    #                 [{ "url": u } for u in batch_df.url ])
+    #             ]
+    #         ), namespace='content')
+    #         for rownum, row in batch_df.iterrows():
+    #             try:
+    #                 cur.execute(f'''
+    #                 INSERT INTO {self.knowledge_db_name} (vector_id, platform, title, unix_timestamp, 
+    #                 formatted_datetime, content, url)
+    #                 VALUES (%s, %s, %s, %s, %s, %s, %s)
+    #                 ''', (row['vector_id'], row['platform'], row['title'], row['unix_timestamp'],
+    #                 row['datetime'], row['content'], row['url']))
+    #                 if self.debug:
+    #                     print("Inserted row ", rownum, row['vector_id'], row['title'])
+    #             except psycopg2.Error as e:
+    #                 print(f"An error occurred: {e}")
+    #                 print(row)
+    #     conn.commit()
+    #     conn.close()
+    #     if self.debug:
+    #         print("Records inserted successfully.")
+    #         # Check index size for each namespace to confirm all of our docs have loaded
+    #         print(self.pinecone_index.describe_index_stats())
 
     def query_article(self, query, namespace, top_k=5):
         '''Queries an article using its title in the specified
@@ -574,12 +574,12 @@ if __name__ == "__main__":
     print(sd.query_article('Portage tennis','content'))
     print(sd.query_article('Expert in Artificial Intelligence','content'))
 
-    asker = Asker(openai_client, storage = sd,
-        introduction = 'Use the below messages which were written by Sheldon Rampton to answer questions as though you are Sheldon Rampton. If the answer cannot be found in the articles, write "I could not find an answer."',
-        string_divider = 'Messages:'
-    )
-    response, references, articles = asker.ask("Tell me about Portage tennis.")
-    print(response)
+    # asker = Asker(openai_client, storage = sd,
+    #     introduction = 'Use the below messages which were written by Sheldon Rampton to answer questions as though you are Sheldon Rampton. If the answer cannot be found in the articles, write "I could not find an answer."',
+    #     string_divider = 'Messages:'
+    # )
+    # response, references, articles = asker.ask("Tell me about Portage tennis.")
+    # print(response)
 
-    response, references, articles = asker.ask("What have you been doing with regard to artificial intelligence?")
-    print(response)
+    # response, references, articles = asker.ask("What have you been doing with regard to artificial intelligence?")
+    # print(response)
