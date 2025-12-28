@@ -36,6 +36,7 @@ personal knowledge, which may include:
 - Google calendar
 - Contacts
 - Nimble
+- Reflect
 - Code repositories on Github
 - Strong Silent Type blog posts
 - Anki cards

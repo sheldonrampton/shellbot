@@ -1,0 +1,60 @@
+**/.git/**
+**/.svn/**
+**/.hg/**
+**/.DS_Store
+**/node_modules/**
+**/dist/**
+**/build/**
+**/target/**
+**/__pycache__/**
+**/*.pyc
+**/*.class
+**/*.o
+**/*.so
+**/*.dylib
+
+**/package-lock.json
+**/yarn.lock
+**/pnpm-lock.yaml
+**/Pipfile.lock
+**/poetry.lock
+**/go.sum
+
+**/.env **/.env.* **
+/*secret*
+**/
+*token* **
+/*credential*
+**/
+*password* **
+/*.key
+**/
+*.pem **
+/*.p12
+
+**
+/*.jpg
+**/
+*.jpeg **
+/*.png
+**/
+*.gif **
+/*.heic
+**/
+*.mp4 **
+/*.mov
+**/
+*.mp3 **
+/*.wav
+
+**
+/*.zip
+**/
+*.tar **
+/*.gz
+**/
+*.7z **
+/*.dmg
+**/
+*.iso
+

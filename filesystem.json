@@ -1,0 +1,49 @@
+{
+  "roots": [
+    // "~/Library/Mobile Documents/com~apple~CloudDocs/Documents/Code",
+    // "~/Library/Mobile Documents/com~apple~CloudDocs/Documents/Writing",
+    // "~/Library/Mobile Documents/com~apple~CloudDocs/Documents/Books",
+    // "~/Library/Mobile Documents/com~apple~CloudDocs/Documents/Reference",
+    "~/not iCloud/Completed/Books by Sheldon"
+  ],
+  "allowedExtensions": [
+    ".txt", ".md", ".rst", ".pdf", ".doc",".docx", ".odt",
+    ".html", ".htm", ".ipynb",
+    ".py", ".js", ".ts", ".php", ".sql", ".tf",
+    ".yaml", ".yml", ".json", ""
+  ],
+  "excludeGlobs": [
+    "**/.git/**",
+    "**/node_modules/**",
+    "**/dist/**",
+    "**/build/**",
+    "**/target/**",
+    "**/__pycache__/**",
+    "**/.DS_Store",
+
+    "**/.env",
+    "**/.env.*",
+    "**/*secret*",
+    "**/*token*",
+    "**/*.key",
+    "**/*.pem",
+
+    "**/*.jpg",
+    "**/*.jpeg",
+    "**/*.png",
+    "**/*.gif",
+    "**/*.heic",
+    "**/*.mp4",
+    "**/*.mov",
+    "**/*.mp3",
+    "**/*.wav",
+
+    "**/*.zip",
+    "**/*.tar",
+    "**/*.gz",
+    "**/*.7z",
+    "**/*.dmg",
+    "**/*.iso"
+  ],
+  "maxFileSizeMB": 25
+}
