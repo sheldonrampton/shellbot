@@ -9,9 +9,92 @@ from pathlib import Path
 from fnmatch import fnmatch
 import boto3
 from botocore.exceptions import ClientError, NoCredentialsError
+import hashlib
+import time
+import datetime
+import psycopg2
 
 # S3 bucket name
 S3_BUCKET = "shellbot"
+
+
+def get_db_connection():
+    """
+    Create a connection to the PostgreSQL database.
+    """
+    db_config = {
+        'dbname': 'd4hob51sunu43p',
+        'user': 'u9ghihqtsvipjj',
+        'password': 'pc39c0e273101856fa90ead0a6c98f774641fb4933a3e1a34fa901f91350a5bb2',
+        'host': 'ccba8a0vn4fb2p.cluster-czrs8kj4isg7.us-east-1.rds.amazonaws.com',
+        'port': '5432',
+        'sslmode': 'allow'
+    }
+    
+    try:
+        conn = psycopg2.connect(**db_config)
+        return conn
+    except psycopg2.Error as e:
+        print(f"Warning: Could not connect to database: {e}")
+        return None
+
+
+def calculate_file_hash(file_path):
+    """
+    Calculate SHA256 hash of file for deduplication.
+    """
+    sha256_hash = hashlib.sha256()
+    with open(file_path, "rb") as f:
+        # Read file in chunks to handle large files
+        for byte_block in iter(lambda: f.read(4096), b""):
+            sha256_hash.update(byte_block)
+    return sha256_hash.hexdigest()
+
+
+def insert_document_record(conn, file_path):
+    """
+    Insert a record into laptop_documents table.
+    Returns True if successful, False otherwise.
+    """
+    if conn is None:
+        return False
+    
+    try:
+        cur = conn.cursor()
+        
+        # Get file metadata
+        path = Path(file_path)
+        title = path.name
+        file_path_str = str(file_path)
+        is_mine = True
+        last_modified = datetime.datetime.fromtimestamp(path.stat().st_mtime).isoformat()
+        ingested_at = int(time.time())
+        document_kind = ""
+        priority_rank = 3
+        content_hash = calculate_file_hash(file_path)
+        
+        # Insert record (skip if duplicate hash)
+        insert_sql = """
+        INSERT INTO public.laptop_documents 
+        (title, file_path, is_mine, last_modified_date, ingested_at, document_kind, priority_rank, content_hash)
+        VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+        ON CONFLICT (content_hash) DO NOTHING
+        """
+        
+        cur.execute(insert_sql, (
+            title, file_path_str, is_mine, last_modified, 
+            ingested_at, document_kind, priority_rank, content_hash
+        ))
+        
+        conn.commit()
+        cur.close()
+        return True
+        
+    except Exception as e:
+        print(f"  Warning: Could not insert database record: {e}")
+        if conn:
+            conn.rollback()
+        return False
 
 
 def load_config(config_file="filesystem.json"):
@@ -110,14 +193,27 @@ def get_files_to_upload(config):
     return files_to_upload, excluded_files, large_files
 
 
-def upload_file_to_s3(local_file, s3_client, bucket_name, s3_key):
-    """Upload a file to S3"""
-    try:
-        s3_client.upload_file(str(local_file), bucket_name, s3_key)
-        return True
-    except ClientError as e:
-        print(f"  Error uploading {local_file}: {e}")
-        return False
+def upload_file_to_s3(local_file, s3_client, bucket_name, s3_key, db_conn=None, max_retries=3):
+    """Upload a file to S3 with retry logic and add record to database"""
+    for attempt in range(max_retries):
+        try:
+            s3_client.upload_file(str(local_file), bucket_name, s3_key)
+            # If upload succeeded, add database record
+            if db_conn:
+                insert_document_record(db_conn, local_file)
+            return True
+        except ClientError as e:
+            print(f"  Error uploading {local_file} (attempt {attempt + 1}/{max_retries}): {e}")
+            if attempt == max_retries - 1:
+                return False
+        except Exception as e:
+            # Catch connection errors, timeouts, etc.
+            print(f"  Connection error uploading {local_file} (attempt {attempt + 1}/{max_retries}): {e}")
+            if attempt == max_retries - 1:
+                return False
+            # Wait a bit before retrying
+            time.sleep(2 ** attempt)  # Exponential backoff: 1s, 2s, 4s
+    return False
 
 
 def main():
@@ -156,10 +252,18 @@ def main():
         print("Error: AWS credentials not found. Configure using 'aws configure'")
         sys.exit(1)
     
+    # Connect to database
+    db_conn = get_db_connection()
+    if db_conn:
+        print("Connected to database")
+    else:
+        print("Warning: Database connection failed - will upload to S3 only")
+    
     # Upload files
     print("\nUploading files...")
     success_count = 0
     error_count = 0
+    failed_uploads = []
     
     for i, file_path in enumerate(files, 1):
         # Create S3 key preserving directory structure
@@ -175,10 +279,11 @@ def main():
         print(f"[{i}/{len(files)}] Uploading: {file_path}")
         print(f"           to S3: {s3_key}")
         
-        if upload_file_to_s3(file_path, s3_client, S3_BUCKET, s3_key):
+        if upload_file_to_s3(file_path, s3_client, S3_BUCKET, s3_key, db_conn):
             success_count += 1
         else:
             error_count += 1
+            failed_uploads.append((str(file_path), s3_key))
     
     print(f"\nUpload complete!")
     print(f"  Successful: {success_count}")
@@ -195,6 +300,14 @@ def main():
         f.write(f"Upload errors: {error_count}\n")
         f.write(f"Files excluded: {len(excluded_files)}\n")
         f.write(f"Large files (>20MB): {len(large_files)}\n\n")
+        
+        if failed_uploads:
+            f.write("=" * 80 + "\n")
+            f.write("FAILED UPLOADS\n")
+            f.write("=" * 80 + "\n")
+            for file_path, s3_key in failed_uploads:
+                f.write(f"{file_path}\n")
+                f.write(f"  S3 key: {s3_key}\n\n")
         
         if large_files:
             f.write("=" * 80 + "\n")
@@ -214,6 +327,11 @@ def main():
                 f.write(f"{reason:30s}  {file_path}\n")
     
     print(f"Report written to upload_report.txt")
+    
+    # Close database connection
+    if db_conn:
+        db_conn.close()
+        print("\nDatabase connection closed.")
 
 
 if __name__ == "__main__":

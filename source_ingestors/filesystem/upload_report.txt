@@ -1,0 +1,145 @@
+================================================================================
+UPLOAD REPORT
+================================================================================
+
+Files uploaded: 92
+Upload errors: 0
+Files excluded: 128
+Large files (>20MB): 1
+
+================================================================================
+LARGE FILES (>20MB)
+================================================================================
+   24.12 MB  /Users/sheldonmrampton/Library/Mobile Documents/com~apple~CloudDocs/Documents/@Reference/Topics/Social Web/Mining the Social Web.pdf
+
+================================================================================
+EXCLUDED FILES
+================================================================================
+Matched exclude pattern         /Users/sheldonmrampton/Library/Mobile Documents/com~apple~CloudDocs/Documents/@Reference/Topics/.DS_Store
+Matched exclude pattern         /Users/sheldonmrampton/Library/Mobile Documents/com~apple~CloudDocs/Documents/@Reference/Topics/Misc./.DS_Store
+Extension not allowed           /Users/sheldonmrampton/Library/Mobile Documents/com~apple~CloudDocs/Documents/@Reference/Topics/Misc./Mass-Public-Shooting-cases-1998-to-2018-2-1.xlsx
+Matched exclude pattern         /Users/sheldonmrampton/Library/Mobile Documents/com~apple~CloudDocs/Documents/@Reference/Topics/Writing ideas/.DS_Store
+Extension not allowed           /Users/sheldonmrampton/Library/Mobile Documents/com~apple~CloudDocs/Documents/@Reference/Topics/Coronavirus/covid.xlsx
+Matched exclude pattern         /Users/sheldonmrampton/Library/Mobile Documents/com~apple~CloudDocs/Documents/@Reference/Topics/Coronavirus/.DS_Store
+Extension not allowed           /Users/sheldonmrampton/Library/Mobile Documents/com~apple~CloudDocs/Documents/@Reference/Topics/Coronavirus/~$covid.xlsx
+Matched exclude pattern         /Users/sheldonmrampton/Library/Mobile Documents/com~apple~CloudDocs/Documents/@Reference/Topics/Social Web/.DS_Store
+Matched exclude pattern         /Users/sheldonmrampton/Library/Mobile Documents/com~apple~CloudDocs/Documents/@Reference/Topics/Writing ideas/Misc./.DS_Store
+Extension not allowed           /Users/sheldonmrampton/Library/Mobile Documents/com~apple~CloudDocs/Documents/@Reference/Topics/Writing ideas/Misc./presidential election outcomes.xlsx
+Extension not allowed           /Users/sheldonmrampton/Library/Mobile Documents/com~apple~CloudDocs/Documents/@Reference/Topics/Writing ideas/Life Coach/Life coach.pages
+Matched exclude pattern         /Users/sheldonmrampton/Library/Mobile Documents/com~apple~CloudDocs/Documents/@Reference/Topics/Writing ideas/Types of social media/.DS_Store
+Matched exclude pattern         /Users/sheldonmrampton/Library/Mobile Documents/com~apple~CloudDocs/Documents/@Reference/Topics/Writing ideas/Tech topics/.DS_Store
+Matched exclude pattern         /Users/sheldonmrampton/Library/Mobile Documents/com~apple~CloudDocs/Documents/@Reference/Topics/Writing ideas/Google talk/.DS_Store
+Matched exclude pattern         /Users/sheldonmrampton/Library/Mobile Documents/com~apple~CloudDocs/Documents/@Reference/Topics/Writing ideas/Bitcoin/money-tokens:pecuniary media
+Matched exclude pattern         /Users/sheldonmrampton/Library/Mobile Documents/com~apple~CloudDocs/Documents/@Reference/Topics/Writing ideas/All that Glitters:You, Too, May Be a Winner/.DS_Store
+Matched exclude pattern         /Users/sheldonmrampton/Library/Mobile Documents/com~apple~CloudDocs/Documents/@Reference/Topics/Writing ideas/Meeting Mary Again, 10 Years Later/.DS_Store
+Matched exclude pattern         /Users/sheldonmrampton/Library/Mobile Documents/com~apple~CloudDocs/Documents/@Reference/Topics/Writing ideas/Fear Lives Matter/.DS_Store
+Extension not allowed           /Users/sheldonmrampton/Library/Mobile Documents/com~apple~CloudDocs/Documents/@Reference/Topics/Writing ideas/Fear Lives Matter/Causes of death.xlsx
+Matched exclude pattern         /Users/sheldonmrampton/Library/Mobile Documents/com~apple~CloudDocs/Documents/@Reference/Topics/Writing ideas/Privacy book/.DS_Store
+Matched exclude pattern         /Users/sheldonmrampton/Library/Mobile Documents/com~apple~CloudDocs/Documents/@Reference/Topics/Writing ideas/Emily/.DS_Store
+Matched exclude pattern         /Users/sheldonmrampton/Library/Mobile Documents/com~apple~CloudDocs/Documents/@Reference/Topics/Writing ideas/Emily/P1010020.jpg
+Matched exclude pattern         /Users/sheldonmrampton/Library/Mobile Documents/com~apple~CloudDocs/Documents/@Reference/Topics/Writing ideas/Emily/P8060018.jpg
+Too large (29.7MB)              /Users/sheldonmrampton/Library/Mobile Documents/com~apple~CloudDocs/Documents/@Reference/Topics/Writing ideas/Emily/Shesha.mov
+Matched exclude pattern         /Users/sheldonmrampton/Library/Mobile Documents/com~apple~CloudDocs/Documents/@Reference/Topics/Writing ideas/Emily/P8080100.jpg
+Matched exclude pattern         /Users/sheldonmrampton/Library/Mobile Documents/com~apple~CloudDocs/Documents/@Reference/Topics/Writing ideas/Emily/P1010025.jpg
+Matched exclude pattern         /Users/sheldonmrampton/Library/Mobile Documents/com~apple~CloudDocs/Documents/@Reference/Topics/Writing ideas/Emily/Simba.mov
+Matched exclude pattern         /Users/sheldonmrampton/Library/Mobile Documents/com~apple~CloudDocs/Documents/@Reference/Topics/Writing ideas/Shut Up & Eat/.DS_Store
+Matched exclude pattern         /Users/sheldonmrampton/Library/Mobile Documents/com~apple~CloudDocs/Documents/@Reference/Topics/Writing ideas/Emily/Language essay/.DS_Store
+Matched exclude pattern         /Users/sheldonmrampton/Library/Mobile Documents/com~apple~CloudDocs/Documents/@Reference/Topics/Writing ideas/Emily/Language essay/Heiroglyphic2.jpg
+Matched exclude pattern         /Users/sheldonmrampton/Library/Mobile Documents/com~apple~CloudDocs/Documents/@Reference/Topics/Writing ideas/Emily/Language essay/Hieroglyphic.jpg
+Matched exclude pattern         /Users/sheldonmrampton/Library/Mobile Documents/com~apple~CloudDocs/Documents/@Reference/Topics/Writing ideas/Emily/Language essay/Babylonian_files/num10.gif
+Extension not allowed           /Users/sheldonmrampton/Library/Mobile Documents/com~apple~CloudDocs/Documents/@Reference/Topics/Writing ideas/Emily/Language essay/Babylonian_files/numbers.css
+Matched exclude pattern         /Users/sheldonmrampton/Library/Mobile Documents/com~apple~CloudDocs/Documents/@Reference/Topics/Writing ideas/Emily/Language essay/Babylonian_files/num8.gif
+Matched exclude pattern         /Users/sheldonmrampton/Library/Mobile Documents/com~apple~CloudDocs/Documents/@Reference/Topics/Writing ideas/Emily/Language essay/Babylonian_files/num9.gif
+Matched exclude pattern         /Users/sheldonmrampton/Library/Mobile Documents/com~apple~CloudDocs/Documents/@Reference/Topics/Writing ideas/Emily/Language essay/Babylonian_files/num40.gif
+Matched exclude pattern         /Users/sheldonmrampton/Library/Mobile Documents/com~apple~CloudDocs/Documents/@Reference/Topics/Writing ideas/Emily/Language essay/Babylonian_files/index.gif
+Matched exclude pattern         /Users/sheldonmrampton/Library/Mobile Documents/com~apple~CloudDocs/Documents/@Reference/Topics/Writing ideas/Emily/Language essay/Babylonian_files/lion1.gif
+Matched exclude pattern         /Users/sheldonmrampton/Library/Mobile Documents/com~apple~CloudDocs/Documents/@Reference/Topics/Writing ideas/Emily/Language essay/Babylonian_files/num50.gif
+Matched exclude pattern         /Users/sheldonmrampton/Library/Mobile Documents/com~apple~CloudDocs/Documents/@Reference/Topics/Writing ideas/Emily/Language essay/Babylonian_files/lion2.gif
+Matched exclude pattern         /Users/sheldonmrampton/Library/Mobile Documents/com~apple~CloudDocs/Documents/@Reference/Topics/Writing ideas/Emily/Language essay/Babylonian_files/num4.gif
+Matched exclude pattern         /Users/sheldonmrampton/Library/Mobile Documents/com~apple~CloudDocs/Documents/@Reference/Topics/Writing ideas/Emily/Language essay/Babylonian_files/num5.gif
+Matched exclude pattern         /Users/sheldonmrampton/Library/Mobile Documents/com~apple~CloudDocs/Documents/@Reference/Topics/Writing ideas/Emily/Language essay/Babylonian_files/num7.gif
+Matched exclude pattern         /Users/sheldonmrampton/Library/Mobile Documents/com~apple~CloudDocs/Documents/@Reference/Topics/Writing ideas/Emily/Language essay/Babylonian_files/num20.gif
+Matched exclude pattern         /Users/sheldonmrampton/Library/Mobile Documents/com~apple~CloudDocs/Documents/@Reference/Topics/Writing ideas/Emily/Language essay/Babylonian_files/num6.gif
+Matched exclude pattern         /Users/sheldonmrampton/Library/Mobile Documents/com~apple~CloudDocs/Documents/@Reference/Topics/Writing ideas/Emily/Language essay/Babylonian_files/num2.gif
+Matched exclude pattern         /Users/sheldonmrampton/Library/Mobile Documents/com~apple~CloudDocs/Documents/@Reference/Topics/Writing ideas/Emily/Language essay/Babylonian_files/num30.gif
+Matched exclude pattern         /Users/sheldonmrampton/Library/Mobile Documents/com~apple~CloudDocs/Documents/@Reference/Topics/Writing ideas/Emily/Language essay/Babylonian_files/num3.gif
+Matched exclude pattern         /Users/sheldonmrampton/Library/Mobile Documents/com~apple~CloudDocs/Documents/@Reference/Topics/Writing ideas/Emily/Language essay/Babylonian_files/num1.gif
+Matched exclude pattern         /Users/sheldonmrampton/Library/Mobile Documents/com~apple~CloudDocs/Documents/@Reference/Topics/Writing ideas/Emily/Language essay/Babylonian_files/zero.gif
+Matched exclude pattern         /Users/sheldonmrampton/Library/Mobile Documents/com~apple~CloudDocs/Documents/@Reference/Topics/Writing ideas/Emily/Language essay/Babylonian_files/num0.gif
+Matched exclude pattern         /Users/sheldonmrampton/Library/Mobile Documents/com~apple~CloudDocs/Documents/@Reference/Topics/Writing ideas/Google talk/Google talk.key/deflect, defer, dismiss, defeat.png
+Matched exclude pattern         /Users/sheldonmrampton/Library/Mobile Documents/com~apple~CloudDocs/Documents/@Reference/Topics/Writing ideas/Google talk/Google talk.key/Panic in the Pantry.png
+Extension not allowed           /Users/sheldonmrampton/Library/Mobile Documents/com~apple~CloudDocs/Documents/@Reference/Topics/Writing ideas/Google talk/Google talk.key/droppedImage-2.tiff
+Extension not allowed           /Users/sheldonmrampton/Library/Mobile Documents/com~apple~CloudDocs/Documents/@Reference/Topics/Writing ideas/Google talk/Google talk.key/droppedImage-3.tiff
+Matched exclude pattern         /Users/sheldonmrampton/Library/Mobile Documents/com~apple~CloudDocs/Documents/@Reference/Topics/Writing ideas/Google talk/Google talk.key/target audience0.png
+Matched exclude pattern         /Users/sheldonmrampton/Library/Mobile Documents/com~apple~CloudDocs/Documents/@Reference/Topics/Writing ideas/Google talk/Google talk.key/spy-cam.jpg
+Extension not allowed           /Users/sheldonmrampton/Library/Mobile Documents/com~apple~CloudDocs/Documents/@Reference/Topics/Writing ideas/Google talk/Google talk.key/droppedImage-8.tiff
+Extension not allowed           /Users/sheldonmrampton/Library/Mobile Documents/com~apple~CloudDocs/Documents/@Reference/Topics/Writing ideas/Google talk/Google talk.key/droppedImage-9.tiff
+Extension not allowed           /Users/sheldonmrampton/Library/Mobile Documents/com~apple~CloudDocs/Documents/@Reference/Topics/Writing ideas/Google talk/Google talk.key/droppedImage.pict
+Extension not allowed           /Users/sheldonmrampton/Library/Mobile Documents/com~apple~CloudDocs/Documents/@Reference/Topics/Writing ideas/Google talk/Google talk.key/droppedImage-5.tiff
+Extension not allowed           /Users/sheldonmrampton/Library/Mobile Documents/com~apple~CloudDocs/Documents/@Reference/Topics/Writing ideas/Google talk/Google talk.key/droppedImage-6.tiff
+Matched exclude pattern         /Users/sheldonmrampton/Library/Mobile Documents/com~apple~CloudDocs/Documents/@Reference/Topics/Writing ideas/Google talk/Google talk.key/target audience.mov
+Extension not allowed           /Users/sheldonmrampton/Library/Mobile Documents/com~apple~CloudDocs/Documents/@Reference/Topics/Writing ideas/Google talk/Google talk.key/droppedImage-7.tiff
+Matched exclude pattern         /Users/sheldonmrampton/Library/Mobile Documents/com~apple~CloudDocs/Documents/@Reference/Topics/Writing ideas/Google talk/Google talk.key/index.apxl.gz
+Matched exclude pattern         /Users/sheldonmrampton/Library/Mobile Documents/com~apple~CloudDocs/Documents/@Reference/Topics/Writing ideas/Google talk/Google talk.key/bernays.jpg
+Matched exclude pattern         /Users/sheldonmrampton/Library/Mobile Documents/com~apple~CloudDocs/Documents/@Reference/Topics/Writing ideas/Google talk/Google talk.key/"Outrage" splash screen.png
+Extension not allowed           /Users/sheldonmrampton/Library/Mobile Documents/com~apple~CloudDocs/Documents/@Reference/Topics/Writing ideas/Google talk/Google talk.key/droppedImage-1.tiff
+Matched exclude pattern         /Users/sheldonmrampton/Library/Mobile Documents/com~apple~CloudDocs/Documents/@Reference/Topics/Writing ideas/Google talk/Google talk.key/P0000108.PLT.good.png
+Matched exclude pattern         /Users/sheldonmrampton/Library/Mobile Documents/com~apple~CloudDocs/Documents/@Reference/Topics/Writing ideas/Google talk/Google talk.key/iwantyou.jpg
+Extension not allowed           /Users/sheldonmrampton/Library/Mobile Documents/com~apple~CloudDocs/Documents/@Reference/Topics/Writing ideas/Google talk/Google talk.key/droppedImage.tiff
+Matched exclude pattern         /Users/sheldonmrampton/Library/Mobile Documents/com~apple~CloudDocs/Documents/@Reference/Topics/Writing ideas/Google talk/Google talk.key/target audience0-2.mov
+Extension not allowed           /Users/sheldonmrampton/Library/Mobile Documents/com~apple~CloudDocs/Documents/@Reference/Topics/Writing ideas/Google talk/Google talk.key/thumbs/st30.tiff
+Extension not allowed           /Users/sheldonmrampton/Library/Mobile Documents/com~apple~CloudDocs/Documents/@Reference/Topics/Writing ideas/Google talk/Google talk.key/thumbs/st27.tiff
+Extension not allowed           /Users/sheldonmrampton/Library/Mobile Documents/com~apple~CloudDocs/Documents/@Reference/Topics/Writing ideas/Google talk/Google talk.key/thumbs/mt0-0.tiff
+Extension not allowed           /Users/sheldonmrampton/Library/Mobile Documents/com~apple~CloudDocs/Documents/@Reference/Topics/Writing ideas/Google talk/Google talk.key/thumbs/st5-2.tiff
+Extension not allowed           /Users/sheldonmrampton/Library/Mobile Documents/com~apple~CloudDocs/Documents/@Reference/Topics/Writing ideas/Google talk/Google talk.key/thumbs/st46.tiff
+Extension not allowed           /Users/sheldonmrampton/Library/Mobile Documents/com~apple~CloudDocs/Documents/@Reference/Topics/Writing ideas/Google talk/Google talk.key/thumbs/st23-1.tiff
+Extension not allowed           /Users/sheldonmrampton/Library/Mobile Documents/com~apple~CloudDocs/Documents/@Reference/Topics/Writing ideas/Google talk/Google talk.key/thumbs/mt0-11.tiff
+Extension not allowed           /Users/sheldonmrampton/Library/Mobile Documents/com~apple~CloudDocs/Documents/@Reference/Topics/Writing ideas/Google talk/Google talk.key/thumbs/st16.tiff
+Extension not allowed           /Users/sheldonmrampton/Library/Mobile Documents/com~apple~CloudDocs/Documents/@Reference/Topics/Writing ideas/Google talk/Google talk.key/thumbs/mt0-7.tiff
+Extension not allowed           /Users/sheldonmrampton/Library/Mobile Documents/com~apple~CloudDocs/Documents/@Reference/Topics/Writing ideas/Google talk/Google talk.key/thumbs/st14-2.tiff
+Extension not allowed           /Users/sheldonmrampton/Library/Mobile Documents/com~apple~CloudDocs/Documents/@Reference/Topics/Writing ideas/Google talk/Google talk.key/thumbs/st8-1.tiff
+Extension not allowed           /Users/sheldonmrampton/Library/Mobile Documents/com~apple~CloudDocs/Documents/@Reference/Topics/Writing ideas/Google talk/Google talk.key/thumbs/st11-1.tiff
+Extension not allowed           /Users/sheldonmrampton/Library/Mobile Documents/com~apple~CloudDocs/Documents/@Reference/Topics/Writing ideas/Google talk/Google talk.key/thumbs/st4-1.tiff
+Extension not allowed           /Users/sheldonmrampton/Library/Mobile Documents/com~apple~CloudDocs/Documents/@Reference/Topics/Writing ideas/Google talk/Google talk.key/thumbs/st9.tiff
+Extension not allowed           /Users/sheldonmrampton/Library/Mobile Documents/com~apple~CloudDocs/Documents/@Reference/Topics/Writing ideas/Google talk/Google talk.key/thumbs/st8.tiff
+Extension not allowed           /Users/sheldonmrampton/Library/Mobile Documents/com~apple~CloudDocs/Documents/@Reference/Topics/Writing ideas/Google talk/Google talk.key/thumbs/st37-1.tiff
+Extension not allowed           /Users/sheldonmrampton/Library/Mobile Documents/com~apple~CloudDocs/Documents/@Reference/Topics/Writing ideas/Google talk/Google talk.key/thumbs/mt0-6.tiff
+Extension not allowed           /Users/sheldonmrampton/Library/Mobile Documents/com~apple~CloudDocs/Documents/@Reference/Topics/Writing ideas/Google talk/Google talk.key/thumbs/st13-1.tiff
+Extension not allowed           /Users/sheldonmrampton/Library/Mobile Documents/com~apple~CloudDocs/Documents/@Reference/Topics/Writing ideas/Google talk/Google talk.key/thumbs/st6-1.tiff
+Extension not allowed           /Users/sheldonmrampton/Library/Mobile Documents/com~apple~CloudDocs/Documents/@Reference/Topics/Writing ideas/Google talk/Google talk.key/thumbs/st3-2.tiff
+Extension not allowed           /Users/sheldonmrampton/Library/Mobile Documents/com~apple~CloudDocs/Documents/@Reference/Topics/Writing ideas/Google talk/Google talk.key/thumbs/st17.tiff
+Extension not allowed           /Users/sheldonmrampton/Library/Mobile Documents/com~apple~CloudDocs/Documents/@Reference/Topics/Writing ideas/Google talk/Google talk.key/thumbs/st4.tiff
+Extension not allowed           /Users/sheldonmrampton/Library/Mobile Documents/com~apple~CloudDocs/Documents/@Reference/Topics/Writing ideas/Google talk/Google talk.key/thumbs/mt0-10.tiff
+Extension not allowed           /Users/sheldonmrampton/Library/Mobile Documents/com~apple~CloudDocs/Documents/@Reference/Topics/Writing ideas/Google talk/Google talk.key/thumbs/st21.tiff
+Extension not allowed           /Users/sheldonmrampton/Library/Mobile Documents/com~apple~CloudDocs/Documents/@Reference/Topics/Writing ideas/Google talk/Google talk.key/thumbs/mt0-13.tiff
+Extension not allowed           /Users/sheldonmrampton/Library/Mobile Documents/com~apple~CloudDocs/Documents/@Reference/Topics/Writing ideas/Google talk/Google talk.key/thumbs/mt0-9.tiff
+Extension not allowed           /Users/sheldonmrampton/Library/Mobile Documents/com~apple~CloudDocs/Documents/@Reference/Topics/Writing ideas/Google talk/Google talk.key/thumbs/st18.tiff
+Extension not allowed           /Users/sheldonmrampton/Library/Mobile Documents/com~apple~CloudDocs/Documents/@Reference/Topics/Writing ideas/Google talk/Google talk.key/thumbs/mt0-5.tiff
+Extension not allowed           /Users/sheldonmrampton/Library/Mobile Documents/com~apple~CloudDocs/Documents/@Reference/Topics/Writing ideas/Google talk/Google talk.key/thumbs/st43.tiff
+Extension not allowed           /Users/sheldonmrampton/Library/Mobile Documents/com~apple~CloudDocs/Documents/@Reference/Topics/Writing ideas/Google talk/Google talk.key/thumbs/st3-1.tiff
+Extension not allowed           /Users/sheldonmrampton/Library/Mobile Documents/com~apple~CloudDocs/Documents/@Reference/Topics/Writing ideas/Google talk/Google talk.key/thumbs/st15.tiff
+Extension not allowed           /Users/sheldonmrampton/Library/Mobile Documents/com~apple~CloudDocs/Documents/@Reference/Topics/Writing ideas/Google talk/Google talk.key/thumbs/st22-1.tiff
+Extension not allowed           /Users/sheldonmrampton/Library/Mobile Documents/com~apple~CloudDocs/Documents/@Reference/Topics/Writing ideas/Google talk/Google talk.key/thumbs/st2-4.tiff
+Extension not allowed           /Users/sheldonmrampton/Library/Mobile Documents/com~apple~CloudDocs/Documents/@Reference/Topics/Writing ideas/Google talk/Google talk.key/thumbs/st14-1.tiff
+Extension not allowed           /Users/sheldonmrampton/Library/Mobile Documents/com~apple~CloudDocs/Documents/@Reference/Topics/Writing ideas/Google talk/Google talk.key/thumbs/st1-1.tiff
+Extension not allowed           /Users/sheldonmrampton/Library/Mobile Documents/com~apple~CloudDocs/Documents/@Reference/Topics/Writing ideas/Google talk/Google talk.key/thumbs/st4-2.tiff
+Extension not allowed           /Users/sheldonmrampton/Library/Mobile Documents/com~apple~CloudDocs/Documents/@Reference/Topics/Writing ideas/Google talk/Google talk.key/thumbs/mt0-8.tiff
+Extension not allowed           /Users/sheldonmrampton/Library/Mobile Documents/com~apple~CloudDocs/Documents/@Reference/Topics/Writing ideas/Google talk/Google talk.key/thumbs/st23.tiff
+Extension not allowed           /Users/sheldonmrampton/Library/Mobile Documents/com~apple~CloudDocs/Documents/@Reference/Topics/Writing ideas/Google talk/Google talk.key/thumbs/mt0-12.tiff
+Extension not allowed           /Users/sheldonmrampton/Library/Mobile Documents/com~apple~CloudDocs/Documents/@Reference/Topics/Writing ideas/Google talk/Google talk.key/thumbs/st28.tiff
+Extension not allowed           /Users/sheldonmrampton/Library/Mobile Documents/com~apple~CloudDocs/Documents/@Reference/Topics/Writing ideas/Google talk/Google talk.key/thumbs/st5-1.tiff
+Extension not allowed           /Users/sheldonmrampton/Library/Mobile Documents/com~apple~CloudDocs/Documents/@Reference/Topics/Writing ideas/Google talk/Google talk.key/thumbs/st10-1.tiff
+Extension not allowed           /Users/sheldonmrampton/Library/Mobile Documents/com~apple~CloudDocs/Documents/@Reference/Topics/Writing ideas/Google talk/Google talk.key/thumbs/st2-3.tiff
+Extension not allowed           /Users/sheldonmrampton/Library/Mobile Documents/com~apple~CloudDocs/Documents/@Reference/Topics/Writing ideas/Google talk/Google talk.key/thumbs/st45.tiff
+Extension not allowed           /Users/sheldonmrampton/Library/Mobile Documents/com~apple~CloudDocs/Documents/@Reference/Topics/Writing ideas/Google talk/Google talk.key/thumbs/st24.tiff
+Extension not allowed           /Users/sheldonmrampton/Library/Mobile Documents/com~apple~CloudDocs/Documents/@Reference/Topics/Writing ideas/Google talk/Google talk.key/thumbs/st48.tiff
+Extension not allowed           /Users/sheldonmrampton/Library/Mobile Documents/com~apple~CloudDocs/Documents/@Reference/Topics/Writing ideas/Google talk/Google talk.key/thumbs/st25.tiff
+Extension not allowed           /Users/sheldonmrampton/Library/Mobile Documents/com~apple~CloudDocs/Documents/@Reference/Topics/Writing ideas/Google talk/Google talk.key/thumbs/mt0-14.tiff
+Extension not allowed           /Users/sheldonmrampton/Library/Mobile Documents/com~apple~CloudDocs/Documents/@Reference/Topics/Writing ideas/Google talk/Google talk.key/thumbs/st0.tiff
+Extension not allowed           /Users/sheldonmrampton/Library/Mobile Documents/com~apple~CloudDocs/Documents/@Reference/Topics/Writing ideas/Google talk/Google talk.key/thumbs/st7-1.tiff
+Extension not allowed           /Users/sheldonmrampton/Library/Mobile Documents/com~apple~CloudDocs/Documents/@Reference/Topics/Writing ideas/Google talk/Google talk.key/thumbs/st12-1.tiff
+Extension not allowed           /Users/sheldonmrampton/Library/Mobile Documents/com~apple~CloudDocs/Documents/@Reference/Topics/Writing ideas/Google talk/Google talk.key/thumbs/st13.tiff
+Extension not allowed           /Users/sheldonmrampton/Library/Mobile Documents/com~apple~CloudDocs/Documents/@Reference/Topics/Writing ideas/Google talk/Google talk.key/thumbs/st44.tiff
+Extension not allowed           /Users/sheldonmrampton/Library/Mobile Documents/com~apple~CloudDocs/Documents/@Reference/Topics/Writing ideas/Google talk/Google talk.key/thumbs/st2-2.tiff
+Extension not allowed           /Users/sheldonmrampton/Library/Mobile Documents/com~apple~CloudDocs/Documents/@Reference/Topics/Writing ideas/Google talk/Google talk.key/thumbs/st36-1.tiff
+Matched exclude pattern         /Users/sheldonmrampton/Library/Mobile Documents/com~apple~CloudDocs/Documents/@Reference/Topics/Writing ideas/Google talk/Google talk.key/QuickLook/Thumbnail.jpg

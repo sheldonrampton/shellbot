@@ -2,15 +2,22 @@
   "roots": [
     // "~/Library/Mobile Documents/com~apple~CloudDocs/Documents/Code",
     // "~/Library/Mobile Documents/com~apple~CloudDocs/Documents/Writing",
-    // "~/Library/Mobile Documents/com~apple~CloudDocs/Documents/Books",
-    // "~/Library/Mobile Documents/com~apple~CloudDocs/Documents/Reference",
-    "~/not iCloud/Completed/Books by Sheldon"
+    // "~/Library/Mobile Documents/com~apple~CloudDocs/Documents/Books"
+    // "~/Library/Mobile Documents/com~apple~CloudDocs/Documents/@Reference",
+    "~/Library/Mobile Documents/com~apple~CloudDocs/Documents/@Reference/Family",
+    "~/Library/Mobile Documents/com~apple~CloudDocs/Documents/@Reference/Friends/Sonia Johnson",
+    "~/Library/Mobile Documents/com~apple~CloudDocs/Documents/@Reference/Princeton",
+    "~/Library/Mobile Documents/com~apple~CloudDocs/Documents/@Reference/Princeton",
+    "~/Library/Mobile Documents/com~apple~CloudDocs/Documents/@Reference/Sheldon's books",
+    "~/Library/Mobile Documents/com~apple~CloudDocs/Documents/@Reference/Topics",
+    "~/Library/Mobile Documents/com~apple~CloudDocs/Documents/@Reference/Work"
+    // "~/not iCloud/Completed/Books by Sheldon"
   ],
   "allowedExtensions": [
     ".txt", ".md", ".rst", ".pdf", ".doc",".docx", ".odt",
     ".html", ".htm", ".ipynb",
     ".py", ".js", ".ts", ".php", ".sql", ".tf",
-    ".yaml", ".yml", ".json", ""
+    ".yaml", ".yml", ".json", "asc", ""
   ],
   "excludeGlobs": [
     "**/.git/**",
