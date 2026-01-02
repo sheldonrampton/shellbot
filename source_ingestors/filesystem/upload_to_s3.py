@@ -51,9 +51,51 @@ def calculate_file_hash(file_path):
     return sha256_hash.hexdigest()
 
 
-def insert_document_record(conn, file_path):
+def check_document_status(conn, file_path):
     """
-    Insert a record into laptop_documents table.
+    Check if document should be uploaded based on database records.
+    Returns: ('skip', content_hash) if file with same hash exists (no upload needed)
+             ('update', None) if file_path exists but content changed (reupload needed)
+             ('insert', None) if new file (upload needed)
+    """
+    if conn is None:
+        return ('insert', None)
+    
+    try:
+        cur = conn.cursor()
+        file_path_str = str(file_path)
+        content_hash = calculate_file_hash(file_path)
+        
+        # Check if this exact content already exists (by hash)
+        cur.execute(
+            "SELECT content_hash FROM public.laptop_documents WHERE content_hash = %s",
+            (content_hash,)
+        )
+        if cur.fetchone():
+            cur.close()
+            return ('skip', content_hash)
+        
+        # Check if this file_path exists with different content
+        cur.execute(
+            "SELECT id FROM public.laptop_documents WHERE file_path = %s",
+            (file_path_str,)
+        )
+        if cur.fetchone():
+            cur.close()
+            return ('update', None)
+        
+        cur.close()
+        return ('insert', None)
+        
+    except Exception as e:
+        print(f"  Warning: Could not check database status: {e}")
+        return ('insert', None)
+
+
+def upsert_document_record(conn, file_path, action):
+    """
+    Insert or update a record in laptop_documents table.
+    action: 'insert' or 'update'
     Returns True if successful, False otherwise.
     """
     if conn is None:
@@ -73,25 +115,37 @@ def insert_document_record(conn, file_path):
         priority_rank = 3
         content_hash = calculate_file_hash(file_path)
         
-        # Insert record (skip if duplicate hash)
-        insert_sql = """
-        INSERT INTO public.laptop_documents 
-        (title, file_path, is_mine, last_modified_date, ingested_at, document_kind, priority_rank, content_hash)
-        VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
-        ON CONFLICT (content_hash) DO NOTHING
-        """
-        
-        cur.execute(insert_sql, (
-            title, file_path_str, is_mine, last_modified, 
-            ingested_at, document_kind, priority_rank, content_hash
-        ))
+        if action == 'update':
+            # Update existing record
+            update_sql = """
+            UPDATE public.laptop_documents 
+            SET content_hash = %s,
+                last_modified_date = %s,
+                ingested_at = %s,
+                title = %s
+            WHERE file_path = %s
+            """
+            cur.execute(update_sql, (
+                content_hash, last_modified, ingested_at, title, file_path_str
+            ))
+        else:  # action == 'insert'
+            # Insert new record
+            insert_sql = """
+            INSERT INTO public.laptop_documents 
+            (title, file_path, is_mine, last_modified_date, ingested_at, document_kind, priority_rank, content_hash)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+            """
+            cur.execute(insert_sql, (
+                title, file_path_str, is_mine, last_modified, 
+                ingested_at, document_kind, priority_rank, content_hash
+            ))
         
         conn.commit()
         cur.close()
         return True
         
     except Exception as e:
-        print(f"  Warning: Could not insert database record: {e}")
+        print(f"  Warning: Could not upsert database record: {e}")
         if conn:
             conn.rollback()
         return False
@@ -193,14 +247,22 @@ def get_files_to_upload(config):
     return files_to_upload, excluded_files, large_files
 
 
-def upload_file_to_s3(local_file, s3_client, bucket_name, s3_key, db_conn=None, max_retries=3):
-    """Upload a file to S3 with retry logic and add record to database"""
+def upload_file_to_s3(local_file, s3_client, bucket_name, s3_key, db_conn=None, db_action='insert', max_retries=3):
+    """
+    Upload a file to S3 with retry logic and add/update record to database.
+    db_action: 'skip', 'insert', or 'update'
+    Returns True if upload succeeded (or was skipped), False otherwise.
+    """
+    # If already in database with same content hash, skip upload
+    if db_action == 'skip':
+        return True
+    
     for attempt in range(max_retries):
         try:
             s3_client.upload_file(str(local_file), bucket_name, s3_key)
-            # If upload succeeded, add database record
+            # If upload succeeded, add/update database record
             if db_conn:
-                insert_document_record(db_conn, local_file)
+                upsert_document_record(db_conn, local_file, db_action)
             return True
         except ClientError as e:
             print(f"  Error uploading {local_file} (attempt {attempt + 1}/{max_retries}): {e}")
@@ -263,9 +325,18 @@ def main():
     print("\nUploading files...")
     success_count = 0
     error_count = 0
+    skipped_count = 0
+    updated_count = 0
     failed_uploads = []
     
     for i, file_path in enumerate(files, 1):
+        # Check if file should be uploaded based on database status
+        if db_conn:
+            db_action, existing_hash = check_document_status(db_conn, file_path)
+        else:
+            db_action = 'insert'
+            existing_hash = None
+        
         # Create S3 key preserving directory structure
         # Use the path relative to the user's home directory
         home = Path.home()
@@ -276,17 +347,28 @@ def main():
             # File is not under home directory, use absolute path
             s3_key = str(file_path).lstrip('/')
         
-        print(f"[{i}/{len(files)}] Uploading: {file_path}")
+        if db_action == 'skip':
+            print(f"[{i}/{len(files)}] Skipping (already uploaded): {file_path}")
+            skipped_count += 1
+            success_count += 1
+            continue
+        
+        action_label = "Reuploading" if db_action == 'update' else "Uploading"
+        print(f"[{i}/{len(files)}] {action_label}: {file_path}")
         print(f"           to S3: {s3_key}")
         
-        if upload_file_to_s3(file_path, s3_client, S3_BUCKET, s3_key, db_conn):
+        if upload_file_to_s3(file_path, s3_client, S3_BUCKET, s3_key, db_conn, db_action):
             success_count += 1
+            if db_action == 'update':
+                updated_count += 1
         else:
             error_count += 1
             failed_uploads.append((str(file_path), s3_key))
     
     print(f"\nUpload complete!")
     print(f"  Successful: {success_count}")
+    print(f"  Skipped (already uploaded): {skipped_count}")
+    print(f"  Updated (file changed): {updated_count}")
     print(f"  Errors: {error_count}")
     
     # Write report
@@ -297,6 +379,8 @@ def main():
         f.write("=" * 80 + "\n\n")
         
         f.write(f"Files uploaded: {success_count}\n")
+        f.write(f"Files skipped (already uploaded): {skipped_count}\n")
+        f.write(f"Files updated (content changed): {updated_count}\n")
         f.write(f"Upload errors: {error_count}\n")
         f.write(f"Files excluded: {len(excluded_files)}\n")
         f.write(f"Large files (>20MB): {len(large_files)}\n\n")
