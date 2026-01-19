@@ -1,3 +1,12 @@
 [submodule "third_party/awslabs-mcp"]
 	path = third_party/awslabs-mcp
 	url = https://github.com/awslabs/mcp.git
+[submodule "third_party/MediaWiki-MCP-Server"]
+	path = third_party/MediaWiki-MCP-Server
+	url = https://github.com/ProfessionalWiki/MediaWiki-MCP-Server.git
+[submodule "third_party/Gmail-MCP-Server"]
+	path = third_party/Gmail-MCP-Server
+	url = https://github.com/GongRzhe/Gmail-MCP-Server.git
+[submodule "third_party/mcp_youtube_extract"]
+	path = third_party/mcp_youtube_extract
+	url = https://github.com/sinjab/mcp_youtube_extract.git

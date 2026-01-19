@@ -4,13 +4,16 @@
     // "~/Library/Mobile Documents/com~apple~CloudDocs/Documents/Writing",
     // "~/Library/Mobile Documents/com~apple~CloudDocs/Documents/Books"
     // "~/Library/Mobile Documents/com~apple~CloudDocs/Documents/@Reference",
-    "~/Library/Mobile Documents/com~apple~CloudDocs/Documents/@Reference/Family",
-    "~/Library/Mobile Documents/com~apple~CloudDocs/Documents/@Reference/Friends/Sonia Johnson",
-    "~/Library/Mobile Documents/com~apple~CloudDocs/Documents/@Reference/Princeton",
-    "~/Library/Mobile Documents/com~apple~CloudDocs/Documents/@Reference/Princeton",
-    "~/Library/Mobile Documents/com~apple~CloudDocs/Documents/@Reference/Sheldon's books",
-    "~/Library/Mobile Documents/com~apple~CloudDocs/Documents/@Reference/Topics",
-    "~/Library/Mobile Documents/com~apple~CloudDocs/Documents/@Reference/Work"
+
+    // "~/Library/Mobile Documents/com~apple~CloudDocs/Documents/@Reference/Family",
+    // "~/Library/Mobile Documents/com~apple~CloudDocs/Documents/@Reference/Friends/Sonia Johnson",
+    // "~/Library/Mobile Documents/com~apple~CloudDocs/Documents/@Reference/Princeton",
+    // "~/Library/Mobile Documents/com~apple~CloudDocs/Documents/@Reference/Princeton",
+    // "~/Library/Mobile Documents/com~apple~CloudDocs/Documents/@Reference/Sheldon's books",
+    // "~/Library/Mobile Documents/com~apple~CloudDocs/Documents/@Reference/Topics",
+    // "~/Library/Mobile Documents/com~apple~CloudDocs/Documents/@Reference/Work",
+    // "~/Library/Mobile Documents/com~apple~CloudDocs/Documents/@Reference/Google Drive downloads",
+    "~/Library/Mobile Documents/com~apple~CloudDocs/Documents/@Reference/PRWatch"
     // "~/not iCloud/Completed/Books by Sheldon"
   ],
   "allowedExtensions": [
