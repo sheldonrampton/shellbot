@@ -15,15 +15,18 @@ from chatbotter import Asker, ConversationLogger
 from flask_cors import CORS
 import os
 from datetime import datetime
+from dotenv import load_dotenv
 
+# Load environment variables from .env file
+load_dotenv()
 
 # In-memory storage for session data and logs
 session_data = {}
 user_logs = []
 
 openai_client = OpenAI(
-  organization='***REMOVED***',
-  project='***REMOVED***',
+  organization=os.getenv('OPENAI_ORGANIZATION'),
+  project=os.getenv('OPENAI_PROJECT'),
 )
 sd = SocialData(
     openai_client,
