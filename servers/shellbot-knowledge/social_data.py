@@ -5,6 +5,10 @@ from bs4 import BeautifulSoup
 import os
 import pandas as pd
 import tiktoken  # for counting tokens
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
 from itertools import islice
 from pinecone import Pinecone, ServerlessSpec
 # from chatbotter import BatchGenerator, Asker
@@ -534,8 +538,8 @@ Main loop.
 if __name__ == "__main__":
     # Create the "months" directory if it doesn't exist
     openai_client = OpenAI(
-      organization='***REMOVED***',
-      project='***REMOVED***',
+      organization=os.getenv('OPENAI_ORGANIZATION'),
+      project=os.getenv('OPENAI_PROJECT'),
     )
     sd = SocialData(
         openai_client,

@@ -49,8 +49,8 @@ def get_storage() -> SocialData:
     if _sd is None:
         # Initialize OpenAI client
         _openai_client = OpenAI(
-            organization=os.getenv('OPENAI_ORG_ID', '***REMOVED***'),
-            project=os.getenv('OPENAI_PROJECT_ID', '***REMOVED***'),
+            organization=os.getenv('OPENAI_ORGANIZATION'),
+            project=os.getenv('OPENAI_PROJECT'),
         )
         
         # Initialize SocialData with knowledge base

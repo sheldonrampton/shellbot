@@ -1040,8 +1040,8 @@ if __name__ == "__main__":
     )
     wiki_strings, urls = extractor.compile_wiki_strings()
     openai_client = OpenAI(
-        organization='***REMOVED***',
-        project='***REMOVED***'
+        organization=os.getenv('OPENAI_ORGANIZATION'),
+        project=os.getenv('OPENAI_PROJECT')
     )
 
     embedder = Embedder(openai_client)
